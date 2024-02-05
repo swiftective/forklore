@@ -21,7 +21,7 @@ function Loading() {
   }, []);
 
   return (
-    <div className="w-full h-full grid place-items-center">
+    <div className="size-full grid place-items-center">
       <div className="grid place-items-center">
         <div className="overflow-hidden rounded-[10px] grid place-items-center">
           <div className="magbor m-[1px] grid place-items-center">
