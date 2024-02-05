@@ -2,7 +2,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Chessboard from "./components/chessboard/chessboard";
 
 import { Config as ChessConfig } from "chessground/config";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // import AddGame from "@/components/add-game";
 import Loading from "@/components/loading";
@@ -16,14 +16,16 @@ function App() {
     },
   });
 
-  setTimeout(() => {
-    setConfig((config) => {
-      return {
-        ...config,
-        fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
-      };
-    });
-  }, 2000);
+  useEffect(() => {
+    setTimeout(() => {
+      setConfig((config) => {
+        return {
+          ...config,
+          fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
+        };
+      });
+    }, 2000);
+  }, []);
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
