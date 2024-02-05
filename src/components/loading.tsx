@@ -1,8 +1,9 @@
 import { GiMountedKnight as Knight } from "react-icons/gi";
 import { Progress } from "@/components/ui/progress";
 import { useEffect, useState } from "react";
+import { AddGameInput } from "@/components/add-game";
 
-function Loading() {
+function Loading({ input }: { input: AddGameInput }) {
   const [progress, setProgess] = useState<number>(0);
 
   useEffect(() => {
