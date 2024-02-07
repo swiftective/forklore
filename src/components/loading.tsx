@@ -3,14 +3,14 @@ import { Progress } from "@/components/ui/progress";
 import { useEffect, useState } from "react";
 import { AddGameInput } from "@/components/add-game";
 
-function Loading({ input }: { input: AddGameInput }) {
+function Loading({ input, onComplete }: { input: AddGameInput, onComplete: () => void }) {
   const [progress, setProgess] = useState<number>(0);
 
   useEffect(() => {
     const key = setInterval(() => {
       setProgess((progress) => {
         if (progress >= 100) {
-          return 0;
+          onComplete()
         }
         return progress + 5;
       });

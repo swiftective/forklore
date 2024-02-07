@@ -9,7 +9,7 @@ function ReviewRow({ moves, moveNumber }: RowProps) {
   return (
     <div
       key={moveNumber}
-      className="odd:bg-secondary p-3 w-full flex rounded-lg select-none"
+      className="odd:bg-secondary p-3 w-full flex rounded-lg select-none fadein"
     >
       <span className="flex-1">{moveNumber}.</span>
       <ReviewMove move={moves[0]} id={moveNumber + "w"} />

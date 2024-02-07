@@ -2,7 +2,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Chessboard from "./components/chessboard/chessboard";
 
 import { Config as ChessConfig } from "chessground/config";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import AddGame, { AddGameInput } from "@/components/add-game";
 import Loading from "@/components/loading";
@@ -26,6 +26,15 @@ function App() {
     },
   });
 
+  const addOnComplete = useCallback((input: AddGameInput) => {
+    setGameInput(input);
+    setGameState("loading");
+  }, []);
+
+  const loadOnComplete = useCallback(() => {
+    setGameState("review");
+  }, []);
+
   useEffect(() => {
     setTimeout(() => {
       setConfig((config) => {
@@ -43,14 +52,9 @@ function App() {
         <Chessboard config={config} className="h-[90vh] w-[90vh]" />
         <div className="border-2 border-border h-[90vh] w-[70vh] p-5 rounded-lg m-auto overflow-hidden">
           {gameState == "start" ? (
-            <AddGame
-              onComplete={(input) => {
-                setGameInput(input);
-                setGameState("loading");
-              }}
-            />
+            <AddGame onComplete={addOnComplete} />
           ) : gameState == "loading" ? (
-            <Loading input={gameInput}/>
+            <Loading input={gameInput} onComplete={loadOnComplete} />
           ) : (
             <GameReview />
           )}
