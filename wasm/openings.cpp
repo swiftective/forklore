@@ -12,7 +12,8 @@ typedef struct
 {
     string eco;
     string name;
-    vector<string> moves;
+    int bookMoves;
+    string posFen;
 } Opening;
 
 vector<string> split(const string &str, char delimter);
@@ -28,53 +29,23 @@ const vector<Opening> load_openings(void);
 EXTERN EMSCRIPTEN_KEEPALIVE
 const char *get_opening(const char *str)
 {
-    const vector<string> moves = split(str, ' ');
+    const vector<string> moves = split(str, '\t');
+    const vector<Opening> openings = load_openings();
 
     Opening found;
-    int bookMoves = 0;
-
-    vector<Opening> openings = load_openings();
+    found.bookMoves = 0;
 
     for (Opening opening : openings)
     {
-        int tempBookMoves = 0;
-        int size = 0;
-
-        if (opening.moves.size() > moves.size())
+        if (opening.posFen == moves[opening.bookMoves - 1] &&
+            opening.bookMoves > found.bookMoves)
         {
-            size = moves.size();
-        }
-        else
-        {
-            size = opening.moves.size();
-        }
-
-        for (int i = 0; i < size; i++)
-        {
-            if (moves[i] != opening.moves[i])
-            {
-                break;
-            }
-            tempBookMoves++;
-        }
-
-        if (tempBookMoves >= bookMoves)
-        {
-            if (tempBookMoves > bookMoves)
-            {
-                bookMoves = tempBookMoves;
-                found = opening;
-            }
-            else if (tempBookMoves == bookMoves &&
-                     found.moves.size() > opening.moves.size())
-            {
-                bookMoves = tempBookMoves;
-                found = opening;
-            }
+            found = opening;
         }
     }
 
-    return cstr(found.eco + "\n" + found.name + "\n" + to_string(bookMoves));
+    return cstr(found.eco + "\n" + found.name + "\n" +
+                to_string(found.bookMoves) + "\n");
 }
 
 // splits string based on character (delimiter)
@@ -100,11 +71,11 @@ inline const char *cstr(const std::string &message)
     return cstr;
 }
 
-// load openings from full.tsv
+// load openings from openings.tsv
 const vector<Opening> load_openings(void)
 {
 
-    ifstream f("full.tsv");
+    ifstream f("openings.tsv");
 
     vector<Opening> openings;
 
@@ -113,7 +84,7 @@ const vector<Opening> load_openings(void)
         cerr << "Error opening file!" << endl;
     }
 
-    Opening o;
+    Opening opening;
     string line;
 
     while (getline(f, line))
@@ -121,22 +92,11 @@ const vector<Opening> load_openings(void)
 
         vector<string> info = split(line, '\t');
 
-        o.eco = info[0];
-        o.name = info[1];
-
-        vector<string> splitMoves = split(info[2], ' ');
-        vector<string> moves;
-
-        for (int i = 0; i < splitMoves.size(); i++)
-        {
-            if (i % 3 != 0)
-            {
-                moves.push_back(splitMoves[i]);
-            }
-        }
-
-        o.moves = moves;
-        openings.push_back(o);
+        opening.eco = info[0];
+        opening.name = info[1];
+        opening.bookMoves = split(info[3], ' ').size();
+        opening.posFen = info[4];
+        openings.push_back(opening);
     }
 
     f.close();
