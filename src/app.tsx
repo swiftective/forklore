@@ -2,13 +2,25 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Chessboard from "./components/chessboard/chessboard";
 
 import { Config as ChessConfig } from "chessground/config";
-import { useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useState } from "react";
 
 import AddGame, { AddGameInput } from "@/components/add-game";
 import Loading from "@/components/loading";
 import GameReview from "./components/game-review/game-review";
+import { ReviewReport } from "./lib/reviewer";
 
 // import Stockfish from "@/components/stockfish";
+
+const initConfig: ChessConfig = {
+  fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  movable: {
+    free: false,
+  },
+};
+
+type SetConfig = React.Dispatch<React.SetStateAction<ChessConfig>> | null;
+
+export const ConfigContext = createContext<SetConfig>(null);
 
 function App() {
   const [gameState, setGameState] = useState<"start" | "loading" | "review">(
@@ -20,46 +32,42 @@ function App() {
     player: "white",
   });
 
-  const [config, setConfig] = useState<ChessConfig>({
-    movable: {
-      free: false,
-    },
-  });
+  const [config, setConfig] = useState<ChessConfig>(initConfig);
+
+  const [review, setReview] = useState<ReviewReport>();
 
   const addOnComplete = useCallback((input: AddGameInput) => {
     setGameInput(input);
     setGameState("loading");
   }, []);
 
-  const loadOnComplete = useCallback(() => {
+  const loadOnComplete = useCallback((review: ReviewReport) => {
+    setReview(review);
     setGameState("review");
-  }, []);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setConfig((config) => {
-        return {
-          ...config,
-          fen: "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1",
-        };
-      });
-    }, 2000);
   }, []);
 
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <div className="flex justify-between m-9">
-        <Chessboard config={config} className="h-[90vh] w-[90vh]" />
-        <div className="border-2 border-border h-[90vh] w-[70vh] p-5 rounded-lg m-auto overflow-hidden">
-          {gameState == "start" ? (
-            <AddGame onComplete={addOnComplete} />
-          ) : gameState == "loading" ? (
-            <Loading input={gameInput} onComplete={loadOnComplete} />
-          ) : (
-            <GameReview />
-          )}
+      <ConfigContext.Provider value={setConfig}>
+        <div className="flex justify-between m-9">
+          <Chessboard config={config} className="h-[90vh] w-[90vh]" />
+          <div className="border-2 border-border h-[90vh] w-[70vh] p-5 rounded-lg m-auto overflow-hidden">
+            {gameState == "start" ? (
+              <AddGame onComplete={addOnComplete} />
+            ) : gameState == "loading" ? (
+              <Loading input={gameInput} onComplete={loadOnComplete} />
+            ) : (
+              <GameReview
+                reviewInput={review}
+                newGame={() => {
+                  setConfig(initConfig);
+                  setGameState("start");
+                }}
+              />
+            )}
+          </div>
         </div>
-      </div>
+      </ConfigContext.Provider>
     </ThemeProvider>
   );
 }

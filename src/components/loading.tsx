@@ -1,25 +1,77 @@
 import { GiMountedKnight as Knight } from "react-icons/gi";
 import { Progress } from "@/components/ui/progress";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { AddGameInput } from "@/components/add-game";
+import { Chess } from "chess.js";
+import { ConfigContext } from "@/app";
+import { ReviewReport, Reviewer } from "@/lib/reviewer";
 
-function Loading({ input, onComplete }: { input: AddGameInput, onComplete: () => void }) {
+function Loading({
+  input,
+  onComplete,
+}: {
+  input: AddGameInput;
+  onComplete: (info: ReviewReport) => void;
+}) {
   const [progress, setProgess] = useState<number>(0);
 
-  useEffect(() => {
-    const key = setInterval(() => {
-      setProgess((progress) => {
-        if (progress >= 100) {
-          onComplete()
-        }
-        return progress + 5;
-      });
-    }, 1000);
+  const setConfig = useContext(ConfigContext);
 
-    return () => {
-      clearInterval(key);
-    };
+  const fens = useMemo(() => {
+    const chess = new Chess();
+    chess.loadPgn(input.pgn);
+
+    const fens = chess.history({ verbose: true }).map((move) => move.after);
+
+    return fens;
   }, []);
+
+  useEffect(() => {
+    setConfig!((config) => ({
+      ...config,
+      orientation: input.player,
+    }));
+
+    const moves = fens.map((fen) => {
+      const fenSplit = fen.split(" ");
+      fenSplit.splice(4, 2);
+      const newFen = fenSplit.join(" ");
+
+      return newFen;
+    });
+
+    const movesString = moves.join("\t");
+
+    const openingData = Module.ccall(
+      "get_opening",
+      "string",
+      ["string"],
+      [movesString],
+    );
+
+    const openingInfo = openingData.split("\n");
+
+    Reviewer(
+      input.pgn,
+      { eco: openingInfo[0], name: openingInfo[1] },
+      Number(openingInfo[2]),
+      (info) => {
+        onComplete(info);
+        console.log(info);
+      },
+      (progress) => {
+        setProgess(progress);
+      },
+      16,
+    );
+  }, []);
+
+  useEffect(() => {
+    setConfig!((config) => ({
+      ...config,
+      fen: fens[Math.round((progress / 100) * fens.length)],
+    }));
+  }, [progress]);
 
   return (
     <div className="size-full grid place-items-center">

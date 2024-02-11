@@ -1,14 +1,17 @@
-type Info = {
-  depth: string;
+export type Info = {
+  depth: number;
   score: string;
-  moves: string;
+  moves: string[];
 };
 
-export function Engine(
-  fnCallBack: ({ depth, moves, score }: Info) => void,
-  engine: Worker,
-) {
-  const stockfish = engine;
+function Engine() {
+  let onMessage = (info: Info) => {
+    console.log(info);
+  };
+
+  const stockfish = new Worker("stockfish.js#stockfish.wasm");
+  stockfish.postMessage("uci");
+  stockfish.postMessage("ucinewgame");
 
   stockfish.onmessage = (event: { data: string } | string) => {
     let line;
@@ -19,7 +22,6 @@ export function Engine(
       line = event;
     }
 
-
     if (
       !line.match("seldepth") ||
       line.match("currmove") ||
@@ -29,25 +31,58 @@ export function Engine(
       return;
     }
 
-    console.log(line)
+    const depth = (() => {
+      const d = /(?<=(depth ))\w+/.exec(line)?.[0] ?? null;
 
-    const depth = (/(?<=(depth ))\w+/.exec(line) || ["yep unknown"])[0];
-    const score = (/(?<=(score ))\w+ \w+/.exec(line) || ["yep unknown"])[0];
-    const moves = (/(?<=(time \w+ pv )).*$/.exec(line) || ["yep unknown"])[0];
+      if (d == null) {
+        return null;
+      }
 
-    fnCallBack({ depth, score, moves });
+      return Number(d);
+    })();
+
+    const score = /(?<=(score ))\w+ (-)?\w+/.exec(line)?.[0] ?? null;
+    const moves = (() => {
+      const temp = /(?<=(time \w+ pv )).*$/.exec(line)?.[0] ?? null;
+
+      if (temp == null) {
+        return null;
+      }
+
+      return temp.split(" ");
+    })();
+
+    if (!(depth && score && moves)) {
+      console.log("wtf", line)
+      return;
+    }
+
+    onMessage({ depth, score, moves });
   };
 
+  // WARN: debug function
   function cmd(command: string) {
+    console.log(command);
     stockfish.postMessage(command);
   }
 
-  return { cmd };
+  function analyze(fen: string, depth: number) {
+    stockfish.postMessage("stop");
+    stockfish.postMessage(`position fen '${fen}'`);
+    stockfish.postMessage(`go depth ${depth}`);
+  }
+
+  function setOnMessage(fn: (info: Info) => void) {
+    onMessage = fn;
+  }
+
+  function reset() {
+    onMessage = (info) => console.log(info);
+    stockfish.postMessage("stop");
+    stockfish.postMessage("ucinewgame");
+  }
+
+  return { cmd, setOnMessage, analyze, reset };
 }
 
-export function EngineWrapper() {
-  const eng = new Worker("stockfish.js#stockfish.wasm");
-  eng.postMessage("uci");
-
-  return eng;
-}
+export const Stockfish = Engine();
