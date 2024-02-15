@@ -9,13 +9,23 @@ import Loading from "@/components/loading";
 import GameReview from "./components/game-review/game-review";
 import { ReviewReport } from "./lib/reviewer";
 
+// WARN: test case for review
+import {reviewTest} from "@/lib/review-test"
+
 // import Stockfish from "@/components/stockfish";
 
+const initFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const initConfig: ChessConfig = {
-  fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+  fen: initFen,
+  orientation: "white",
   movable: {
     free: false,
   },
+};
+
+const initReview: ReviewReport = {
+  opening: { name: "unknown", eco: "00" },
+  review: [{ move: "e4", moveFen: initFen, bookMove: true }],
 };
 
 type SetConfig = React.Dispatch<React.SetStateAction<ChessConfig>> | null;
@@ -24,7 +34,7 @@ export const ConfigContext = createContext<SetConfig>(null);
 
 function App() {
   const [gameState, setGameState] = useState<"start" | "loading" | "review">(
-    "start",
+    "review",
   );
 
   const [gameInput, setGameInput] = useState<AddGameInput>({
@@ -58,7 +68,7 @@ function App() {
               <Loading input={gameInput} onComplete={loadOnComplete} />
             ) : (
               <GameReview
-                reviewInput={review}
+                reviewInput={reviewTest}
                 newGame={() => {
                   setConfig(initConfig);
                   setGameState("start");

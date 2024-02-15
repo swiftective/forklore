@@ -23,7 +23,6 @@ function Chessboard({ config = {}, className = "" }: Props) {
     if (ref && ref.current && !api) {
       const chessgroundApi = ChessgroundApi(ref.current, {
         animation: { enabled: true, duration: 200 },
-        ...config,
       });
       setApi(chessgroundApi);
     } else if (ref && ref.current && api) {

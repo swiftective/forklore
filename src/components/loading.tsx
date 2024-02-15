@@ -27,10 +27,9 @@ function Loading({
   }, []);
 
   useEffect(() => {
-    setConfig!((config) => ({
-      ...config,
+    setConfig!({
       orientation: input.player,
-    }));
+    });
 
     const moves = fens.map((fen) => {
       const fenSplit = fen.split(" ");
@@ -59,19 +58,15 @@ function Loading({
         onComplete(info);
         console.log(info);
       },
-      (progress) => {
+      (progress, fen) => {
         setProgess(progress);
+        setConfig!({
+          fen: fen,
+        });
       },
       16,
     );
   }, []);
-
-  useEffect(() => {
-    setConfig!((config) => ({
-      ...config,
-      fen: fens[Math.round((progress / 100) * fens.length)],
-    }));
-  }, [progress]);
 
   return (
     <div className="size-full grid place-items-center">

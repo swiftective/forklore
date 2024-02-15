@@ -2,24 +2,73 @@ import { ReviewReport } from "@/lib/reviewer";
 import { Button } from "../ui/button";
 import { CgBolt as Icon } from "react-icons/cg";
 import ReviewMove from "./review-move";
+import { ConfigContext } from "@/app";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Chess } from "chess.js";
+import { Key } from "chessground/types";
+import Analyzer from "./analyzer";
 
 type GameReviewProps = {
-  reviewInput: ReviewReport | undefined;
+  reviewInput: ReviewReport;
   newGame: () => void;
 };
 
+const initFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
 function GameReview({ reviewInput, newGame }: GameReviewProps) {
-  if (reviewInput == undefined) {
-    console.error("error: reviewInput undefined");
-    newGame();
-    return null;
-  }
+  const setConfig = useContext(ConfigContext);
+
+  const [fen, setFen] = useState(initFen);
+
+  const chess = useMemo(() => new Chess(), []);
+
+  const getDests = useCallback((chess: Chess) => {
+    const map = new Map<Key, Key[]>();
+
+    chess.moves({ verbose: true }).forEach((move) => {
+      if (map.has(move.from)) {
+        map.get(move.from)?.push(move.to);
+      } else {
+        map.set(move.from, [move.to]);
+      }
+    });
+
+    return map;
+  }, []);
+
+  useEffect(() => {
+    setConfig!({
+      fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
+      movable: {
+        color: "white",
+        dests: getDests(chess),
+        events: {
+          after: (from, to) => {
+            chess.move({ from: from, to: to });
+
+            setFen(chess.fen());
+
+            setConfig!(() => ({
+              turnColor:chess.turn() == "w" ? "white" : "black",
+              check: chess.isCheck(),
+              fen: chess.fen(),
+              movable: {
+                dests: getDests(chess),
+                color: chess.turn() == "w" ? "white" : "black",
+              },
+            }));
+          },
+        },
+      },
+    });
+  }, []);
 
   const moves = reviewInput.review.map((move) => move.move);
 
   return (
     <div className="flex flex-col size-full">
-      <div className="w-full min-h-[30%] border border-border mb-8 rounded-lg"></div>
+      <Analyzer fen={fen}/>
+      <div className="w-full min-h-[10%] border border-border mb-8 rounded-lg"></div>
       <div className="mb-8 mx-1 text-sm text-muted-foreground">
         {reviewInput.opening.eco} {reviewInput.opening.name}
       </div>
