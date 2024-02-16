@@ -17,6 +17,9 @@ import {reviewTest} from "@/lib/review-test"
 const initFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const initConfig: ChessConfig = {
   fen: initFen,
+  highlight: {
+    lastMove: false,
+  },
   orientation: "white",
   movable: {
     free: false,

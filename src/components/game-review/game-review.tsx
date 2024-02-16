@@ -1,12 +1,21 @@
 import { ReviewReport } from "@/lib/reviewer";
-import { Button } from "../ui/button";
-import { CgBolt as Icon } from "react-icons/cg";
-import ReviewMove from "./review-move";
 import { ConfigContext } from "@/app";
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Chess } from "chess.js";
 import { Key } from "chessground/types";
 import Analyzer from "./analyzer";
+import ReviewBoard from "@/components/game-review/review-board";
+import ReviewOpening from "@/components/game-review/review-opening";
+import ReviewNewGame from "@/components/game-review/review-new-game";
+
+export const FenContext = createContext<((fen: string) => void) | null>(null);
 
 type GameReviewProps = {
   reviewInput: ReviewReport;
@@ -21,6 +30,14 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
   const [fen, setFen] = useState(initFen);
 
   const chess = useMemo(() => new Chess(), []);
+
+  const setCurrFen = useCallback(
+    (fen: string) => {
+      setConfig!({ fen: fen });
+      setFen(fen);
+    },
+    [setConfig],
+  );
 
   const getDests = useCallback((chess: Chess) => {
     const map = new Map<Key, Key[]>();
@@ -40,6 +57,7 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
     setConfig!({
       fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
       movable: {
+        free: false,
         color: "white",
         dests: getDests(chess),
         events: {
@@ -49,7 +67,7 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
             setFen(chess.fen());
 
             setConfig!(() => ({
-              turnColor:chess.turn() == "w" ? "white" : "black",
+              turnColor: chess.turn() == "w" ? "white" : "black",
               check: chess.isCheck(),
               fen: chess.fen(),
               movable: {
@@ -60,44 +78,22 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
           },
         },
       },
+      highlight: {
+        lastMove: true,
+      },
     });
   }, []);
 
-  const moves = reviewInput.review.map((move) => move.move);
 
   return (
-    <div className="flex flex-col size-full">
-      <Analyzer fen={fen}/>
-      <div className="w-full min-h-[10%] border border-border mb-8 rounded-lg"></div>
-      <div className="mb-8 mx-1 text-sm text-muted-foreground">
-        {reviewInput.opening.eco} {reviewInput.opening.name}
+    <FenContext.Provider value={setCurrFen}>
+      <div className="flex flex-col size-full">
+        <Analyzer fen={fen} />
+        <ReviewOpening opening={reviewInput.opening}/>
+        <ReviewBoard moves={reviewInput.review} />
+        <ReviewNewGame fn={newGame} />
       </div>
-      <div className="overflow-y-auto min-h-0 flex-auto">
-        {moves.map((move, index) => {
-          if (index % 2 == 1) {
-            return;
-          }
-
-          const move1 = move;
-          const move2 = moves[index + 1];
-          const moveNumber = index / 2 + 1;
-
-          return (
-            <div
-              key={moveNumber}
-              className="odd:bg-secondary p-3 w-full flex rounded-lg select-none fadein"
-            >
-              <span className="flex-1">{moveNumber}.</span>
-              <ReviewMove move={move1} id={moveNumber + "w"} />
-              <ReviewMove move={move2} id={moveNumber + "b"} />
-            </div>
-          );
-        })}
-      </div>
-      <Button onClick={newGame} className="w-full my-5 p-5 font-bold h-5">
-        <Icon className="m-1 size-6" /> New Game
-      </Button>
-    </div>
+    </FenContext.Provider>
   );
 }
 
