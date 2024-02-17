@@ -31,14 +31,6 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
 
   const chess = useMemo(() => new Chess(), []);
 
-  const setCurrFen = useCallback(
-    (fen: string) => {
-      setConfig!({ fen: fen });
-      setFen(fen);
-    },
-    [setConfig],
-  );
-
   const getDests = useCallback((chess: Chess) => {
     const map = new Map<Key, Key[]>();
 
@@ -52,6 +44,27 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
 
     return map;
   }, []);
+
+  const getTurn = useCallback((chess: Chess) => {
+    if (chess.turn() == "w") {
+      return "white";
+    }
+    return "black";
+  }, []);
+
+  const setCurrFen = useCallback(
+    (fen: string) => {
+      chess.load(fen);
+      setConfig!({
+        fen: fen,
+        turnColor: getTurn(chess),
+        check: chess.isCheck(),
+        movable: { color: getTurn(chess), dests: getDests(chess) },
+      });
+      setFen(fen);
+    },
+    [setConfig, chess, getDests, getTurn],
+  );
 
   useEffect(() => {
     setConfig!({
@@ -67,12 +80,12 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
             setFen(chess.fen());
 
             setConfig!(() => ({
-              turnColor: chess.turn() == "w" ? "white" : "black",
+              turnColor: getTurn(chess),
               check: chess.isCheck(),
               fen: chess.fen(),
               movable: {
                 dests: getDests(chess),
-                color: chess.turn() == "w" ? "white" : "black",
+                color: getTurn(chess),
               },
             }));
           },
@@ -84,12 +97,11 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
     });
   }, []);
 
-
   return (
     <FenContext.Provider value={setCurrFen}>
       <div className="flex flex-col size-full">
         <Analyzer fen={fen} />
-        <ReviewOpening opening={reviewInput.opening}/>
+        <ReviewOpening opening={reviewInput.opening} />
         <ReviewBoard moves={reviewInput.review} />
         <ReviewNewGame fn={newGame} />
       </div>

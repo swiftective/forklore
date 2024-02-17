@@ -1,6 +1,24 @@
 import { Chess } from "chess.js";
 import { Stockfish as engine } from "./engine";
 
+type BestMove = {
+  move: string;
+  fen: string;
+};
+
+export type ReviewedMoveTemp =
+  | {
+      move: string;
+      moveFen: string;
+      bookMove: true;
+    }
+  | {
+      move: string;
+      moveFen: string;
+      bestMoves: BestMove[];
+      eval: string;
+    };
+
 export type ReviewedMove =
   | {
       move: string;
@@ -9,9 +27,11 @@ export type ReviewedMove =
     }
   | {
       move: string;
-      moveFen: { after: string; before: string };
-      bestMoves: string[];
-      eval: string;
+      moveFen: string;
+      bestMovesBefore: BestMove[];
+      bestMovesAfter: BestMove[];
+      evalBefore: string;
+      evalAfter: string;
     };
 
 export type Opening = { eco: string; name: string };
@@ -34,14 +54,46 @@ export function Reviewer(
     .map((move) => ({ before: move.before, after: move.after }));
 
   let reviewedMoves = bookMoves;
-  const movesReviewed: ReviewedMove[] = [];
+  const movesReviewed: ReviewedMoveTemp[] = [];
   let reviewComplete = false;
 
   function reviewDone() {
     reviewComplete = true;
     engine.reset();
+
+    const reviewTemp: ReviewedMove[] = [];
+
+    movesReviewed.forEach((move, index) => {
+      if ("bookMove" in move) {
+        reviewTemp.push(move);
+        return;
+      }
+
+      let evalAfter = "";
+      let afterBestMoves: BestMove[] = [];
+      const nextMove = movesReviewed[index + 1];
+
+      if (nextMove) {
+        if ("bookMove" in nextMove) {
+          new Error("bookmove here should not exist");
+          return;
+        }
+        evalAfter = nextMove.eval;
+        afterBestMoves = nextMove.bestMoves;
+      }
+
+      reviewTemp.push({
+        move: move.move,
+        moveFen: move.moveFen,
+        evalBefore: move.eval,
+        evalAfter: evalAfter,
+        bestMovesBefore: move.bestMoves,
+        bestMovesAfter: afterBestMoves,
+      });
+    });
+
     setTimeout(() => {
-      onComplete({ opening, review: movesReviewed });
+      onComplete({ opening, review: reviewTemp });
     }, 300);
   }
 
@@ -65,7 +117,7 @@ export function Reviewer(
 
     movesReviewed.push({
       move: gameMoves[reviewedMoves],
-      moveFen: fens[reviewedMoves],
+      moveFen: fens[reviewedMoves].after,
       bestMoves: moves,
       eval: score,
     });
@@ -89,7 +141,7 @@ export function Reviewer(
       setTimeout(() => {
         movesReviewed.push({
           move: gameMoves[reviewedMoves],
-          moveFen: fens[reviewedMoves],
+          moveFen: fens[reviewedMoves].after,
           bestMoves: moves,
           eval: score,
         });
@@ -109,7 +161,7 @@ export function Reviewer(
     }
 
     setTimeout(() => {
-      engine.analyze(fens[reviewedMoves].after, reviewDepth);
+      engine.analyze(fens[reviewedMoves].before, reviewDepth);
     }, 300);
   });
 

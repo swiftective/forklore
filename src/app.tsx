@@ -26,10 +26,6 @@ const initConfig: ChessConfig = {
   },
 };
 
-const initReview: ReviewReport = {
-  opening: { name: "unknown", eco: "00" },
-  review: [{ move: "e4", moveFen: initFen, bookMove: true }],
-};
 
 type SetConfig = React.Dispatch<React.SetStateAction<ChessConfig>> | null;
 
@@ -47,7 +43,7 @@ function App() {
 
   const [config, setConfig] = useState<ChessConfig>(initConfig);
 
-  const [review, setReview] = useState<ReviewReport>();
+  const [review, setReview] = useState<ReviewReport|null>(null);
 
   const addOnComplete = useCallback((input: AddGameInput) => {
     setGameInput(input);
@@ -55,7 +51,8 @@ function App() {
   }, []);
 
   const loadOnComplete = useCallback((review: ReviewReport) => {
-    setReview(review);
+    console.log(review);
+    // setReview(review);
     setGameState("review");
   }, []);
 
@@ -69,7 +66,7 @@ function App() {
               <AddGame onComplete={addOnComplete} />
             ) : gameState == "loading" ? (
               <Loading input={gameInput} onComplete={loadOnComplete} />
-            ) : (
+            ) : gameState == "review" ? (
               <GameReview
                 reviewInput={reviewTest}
                 newGame={() => {
@@ -77,7 +74,7 @@ function App() {
                   setGameState("start");
                 }}
               />
-            )}
+            ) : null}
           </div>
         </div>
       </ConfigContext.Provider>

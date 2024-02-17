@@ -1,6 +1,6 @@
 import { Chess } from "chess.js";
 
-type Move = {
+export type Move = {
   move: string;
   fen: string;
 };
