@@ -9,11 +9,6 @@ import Loading from "@/components/loading";
 import GameReviewPromotion from "./components/game-review";
 import { ReviewReport } from "./lib/reviewer";
 
-// WARN: test case for review
-import {reviewTest} from "@/lib/review-test"
-
-// import Stockfish from "@/components/stockfish";
-
 const initFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const initConfig: ChessConfig = {
   fen: initFen,
@@ -26,14 +21,13 @@ const initConfig: ChessConfig = {
   },
 };
 
-
 type SetConfig = React.Dispatch<React.SetStateAction<ChessConfig>> | null;
 
 export const ConfigContext = createContext<SetConfig>(null);
 
 function App() {
   const [gameState, setGameState] = useState<"start" | "loading" | "review">(
-    "review",
+    "start",
   );
 
   const [gameInput, setGameInput] = useState<AddGameInput>({
@@ -43,7 +37,7 @@ function App() {
 
   const [config, setConfig] = useState<ChessConfig>(initConfig);
 
-  const [review, setReview] = useState<ReviewReport|null>(null);
+  const [review, setReview] = useState<ReviewReport | null>(null);
 
   const addOnComplete = useCallback((input: AddGameInput) => {
     setGameInput(input);
@@ -51,8 +45,8 @@ function App() {
   }, []);
 
   const loadOnComplete = useCallback((review: ReviewReport) => {
+    setReview(review);
     console.log(review);
-    // setReview(review);
     setGameState("review");
   }, []);
 
@@ -66,9 +60,9 @@ function App() {
               <AddGame onComplete={addOnComplete} />
             ) : gameState == "loading" ? (
               <Loading input={gameInput} onComplete={loadOnComplete} />
-            ) : gameState == "review" ? (
+            ) : gameState == "review" && review != null ? (
               <GameReviewPromotion
-                reviewInput={reviewTest}
+                reviewInput={review}
                 newGame={() => {
                   setConfig(initConfig);
                   setGameState("start");

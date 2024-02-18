@@ -28,11 +28,7 @@ function ReviewRow({ id, move1, move2 }: RowProps) {
         <div className="flex gap-4">
           <span className="w-24">{id}.</span>
           <span
-            onClick={(e) => {
-              e.currentTarget.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
+            onClick={() => {
               setFen!(move1.moveFen);
               setMove(1);
             }}
@@ -41,11 +37,7 @@ function ReviewRow({ id, move1, move2 }: RowProps) {
             {move1.move}
           </span>
           <span
-            onClick={(e) => {
-              e.currentTarget.scrollIntoView({
-                behavior: "smooth",
-                block: "start",
-              });
+            onClick={() => {
               setFen!(move2.moveFen);
               setMove(2);
             }}
