@@ -1,10 +1,6 @@
 import { Chess } from "chess.js";
 import { Stockfish as engine } from "./engine";
-
-type BestMove = {
-  move: string;
-  fen: string;
-};
+import {Move} from "@/lib/engine"
 
 export type ReviewedMoveTemp =
   | {
@@ -15,7 +11,7 @@ export type ReviewedMoveTemp =
   | {
       move: string;
       moveFen: string;
-      bestMoves: BestMove[];
+      bestMoves: Move[];
       eval: string;
     };
 
@@ -28,8 +24,8 @@ export type ReviewedMove =
   | {
       move: string;
       moveFen: string;
-      bestMovesBefore: BestMove[];
-      bestMovesAfter: BestMove[];
+      bestMovesBefore: Move[];
+      bestMovesAfter: Move[];
       evalBefore: string;
       evalAfter: string;
     };
@@ -70,7 +66,7 @@ export function Reviewer(
       }
 
       let evalAfter = "";
-      let afterBestMoves: BestMove[] = [];
+      let afterBestMoves: Move[] = [];
       const nextMove = movesReviewed[index + 1];
 
       if (nextMove) {

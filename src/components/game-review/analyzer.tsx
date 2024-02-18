@@ -83,7 +83,7 @@ function Analyzer({ fen }: AnalProps) {
             />
           </span>
         </span>
-        <SavedMoves handleClick={handleClick} savedMoves={savedMoves} />
+        <SavedMoves savedMoves={savedMoves} />
       </div>
     </div>
   );

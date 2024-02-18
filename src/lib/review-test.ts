@@ -40,7 +40,7 @@ export const reviewTest: ReviewReport = {
       move: "Qxd4",
       moveFen: "rnbqkbnr/ppp2ppp/8/3p4/3QP3/2P5/PP3PPP/RNB1KBNR b KQkq - 0 4",
       evalBefore: "-0.08",
-      evalAfter: "-0.08",
+      evalAfter: "+0.08",
       bestMovesBefore: [
         {
           move: "exd5",

@@ -1,53 +1,37 @@
 import { ReviewedMove } from "@/lib/reviewer";
-import { FenContext } from "./game-review";
-import { useContext } from "react";
+import SavedMoves from "@/components/game-review/saved-moves";
+import Eval from "./eval";
 
 type MoveProp = {
   move: ReviewedMove;
 };
 
 function ReviewMove({ move }: MoveProp) {
-  const setFen = useContext(FenContext);
-
   return "bookMove" in move ? (
-    <div className="w-full min-h-36 p-4 border border-border rounded-lg">{move.move} is a book move</div>
+    <div className="w-full min-h-36 p-4 border border-border rounded-lg">
+      <span className="text-xl mr-2 font-bold">{move.move}</span> is a book move
+    </div>
   ) : (
     <div className="w-full min-h-36 p-4 flex flex-col gap-4 border border-border rounded-lg">
-      <div>move: {move.move}</div>
-      <div>eval before move: {move.evalBefore}</div>
-      {move.evalAfter == "" ? null : (
-        <div>eval after move: {move.evalAfter}</div>
-      )}
+      <div className="text-xl font-bold">{move.move}</div>
       <div>
-        best moves:
-        <div className="flex flex-wrap gap-2">
-          {move.bestMovesBefore.map((move) => {
-            return (
-              <span
-                onClick={() => setFen!(move.fen)}
-                className="select-none cursor-pointer hover:underline"
-              >
-                {move.move}
-              </span>
-            );
-          })}
+        eval before move:
+        <Eval score={move.evalBefore} />
+      </div>
+      {move.evalAfter == "" ? null : (
+        <div>
+          eval after move:
+          <Eval score={move.evalAfter} />
         </div>
+      )}
+      <div className="flex flex-col">
+        <span>best moves:</span>
+        <SavedMoves savedMoves={move.bestMovesBefore} className="w-96" />
       </div>
       {move.bestMovesAfter.length == 0 ? null : (
-        <div>
-          continuation after {move.move}:
-          <div className="flex flex-wrap gap-2">
-            {move.bestMovesAfter.map((move) => {
-              return (
-                <span
-                  onClick={() => setFen!(move.fen)}
-                  className="select-none cursor-pointer hover:underline"
-                >
-                  {move.move}
-                </span>
-              );
-            })}
-          </div>
+        <div className="flex flex-col">
+          <span>continuation after {move.move}:</span>
+          <SavedMoves savedMoves={move.bestMovesAfter} className="w-96" />
         </div>
       )}
     </div>
