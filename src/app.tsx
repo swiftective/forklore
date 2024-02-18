@@ -6,7 +6,7 @@ import { createContext, useCallback, useState } from "react";
 
 import AddGame, { AddGameInput } from "@/components/add-game";
 import Loading from "@/components/loading";
-import GameReview from "./components/game-review/game-review";
+import GameReviewPromotion from "./components/game-review";
 import { ReviewReport } from "./lib/reviewer";
 
 // WARN: test case for review
@@ -67,7 +67,7 @@ function App() {
             ) : gameState == "loading" ? (
               <Loading input={gameInput} onComplete={loadOnComplete} />
             ) : gameState == "review" ? (
-              <GameReview
+              <GameReviewPromotion
                 reviewInput={reviewTest}
                 newGame={() => {
                   setConfig(initConfig);

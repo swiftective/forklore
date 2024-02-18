@@ -8,16 +8,17 @@ import {
   useMemo,
   useState,
 } from "react";
-import { Chess } from "chess.js";
+import { Chess, Square } from "chess.js";
 import { Key } from "chessground/types";
 import Analyzer from "./analyzer";
 import ReviewBoard from "@/components/game-review/review-board";
 import ReviewOpening from "@/components/game-review/review-opening";
 import ReviewNewGame from "@/components/game-review/review-new-game";
+import { usePromotion } from "@/components/game-review/promotion-context";
 
 export const FenContext = createContext<((fen: string) => void) | null>(null);
 
-type GameReviewProps = {
+export type GameReviewProps = {
   reviewInput: ReviewReport;
   newGame: () => void;
 };
@@ -52,6 +53,8 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
     return "black";
   }, []);
 
+  const promptPromotion = usePromotion();
+
   const setCurrFen = useCallback(
     (fen: string) => {
       chess.load(fen);
@@ -75,6 +78,30 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
         dests: getDests(chess),
         events: {
           after: (from, to) => {
+            const isPromotion =
+              chess.get(from as Square).type == "p" &&
+              (to[1] == "8" || to[1] == "1");
+
+            if (isPromotion) {
+              promptPromotion!((piece) => {
+                chess.move({ from: from, to: to, promotion: piece });
+
+                setFen(chess.fen());
+
+                setConfig!(() => ({
+                  turnColor: getTurn(chess),
+                  check: chess.isCheck(),
+                  fen: chess.fen(),
+                  movable: {
+                    dests: getDests(chess),
+                    color: getTurn(chess),
+                  },
+                }));
+              });
+
+              return;
+            }
+
             chess.move({ from: from, to: to });
 
             setFen(chess.fen());

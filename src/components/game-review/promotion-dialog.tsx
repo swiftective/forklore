@@ -1,47 +1,30 @@
+import { memo } from "react";
 import { AlertDialog, AlertDialogContent } from "../ui/alert-dialog";
-import { Button } from "../ui/button";
+import MyPiece from "./my-piece";
 
-function PromotionDialog({
-  open,
-  onSelect,
-}: {
+type DialogProps = {
   open: boolean;
-  onSelect: (piece: string) => void;
-}) {
+  select: (piece: string) => void;
+};
+
+export type PromotionPiece = "q" | "b" | "r" | "n";
+
+const PromotionDialog = memo(({ open, select }: DialogProps) => {
+  const pieces: PromotionPiece[] = ["q", "b", "r", "n"];
+
+  const handleClick = (piece: PromotionPiece) => {
+    return () => select(piece);
+  };
+
   return (
     <AlertDialog open={open}>
-      <AlertDialogContent>
-        <Button
-          onClick={() => {
-            onSelect("q");
-          }}
-        >
-          Q
-        </Button>
-        <Button
-          onClick={() => {
-            onSelect("b");
-          }}
-        >
-          B
-        </Button>
-        <Button
-          onClick={() => {
-            onSelect("r");
-          }}
-        >
-          R
-        </Button>
-        <Button
-          onClick={() => {
-            onSelect("n");
-          }}
-        >
-          N
-        </Button>
+      <AlertDialogContent className="flex justify-around">
+        {pieces.map((p) => {
+          return <MyPiece piece={p} handleClick={handleClick(p)} />;
+        })}
       </AlertDialogContent>
     </AlertDialog>
   );
-}
+});
 
 export default PromotionDialog;
