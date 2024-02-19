@@ -1,4 +1,4 @@
-import { ReviewReport } from "./reviewer";
+import { ReviewReport } from "@/lib/reviewer";
 
 export const reviewTest: ReviewReport = {
   opening: {

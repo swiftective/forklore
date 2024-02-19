@@ -15,7 +15,6 @@ import ReviewBoard from "@/components/game-review/review-board";
 import ReviewOpening from "@/components/game-review/review-opening";
 import ReviewNewGameButton from "@/components/game-review/review-new-game";
 import { usePromotion } from "@/components/game-review/promotion-context";
-import { Button } from "../ui/button";
 import { History, HistoryType } from "@/components/game-review/fen-history";
 import HistoryButton from "./history-button";
 

@@ -208,3 +208,21 @@ cg-board piece.fading {
 .cg-wrap.orientation-white coords.files coord:nth-child(2n + 1) {
   color: rgba(255, 255, 255, 0.8);
 }
+
+/* Chessboard light mode */
+html.light {
+  /** Alternating colors in rank/file labels */
+  .cg-wrap.orientation-white coords.ranks coord:nth-child(2n),
+  .cg-wrap.orientation-white coords.files coord:nth-child(2n),
+  .cg-wrap.orientation-black coords.ranks coord:nth-child(2n + 1),
+  .cg-wrap.orientation-black coords.files coord:nth-child(2n + 1) {
+    color: black;
+  }
+
+  .cg-wrap.orientation-black coords.ranks coord:nth-child(2n),
+  .cg-wrap.orientation-black coords.files coord:nth-child(2n),
+  .cg-wrap.orientation-white coords.ranks coord:nth-child(2n + 1),
+  .cg-wrap.orientation-white coords.files coord:nth-child(2n + 1) {
+    color: black;
+  }
+}
