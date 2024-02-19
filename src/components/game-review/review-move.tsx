@@ -1,19 +1,26 @@
 import { ReviewedMove } from "@/lib/reviewer";
 import SavedMoves from "@/components/game-review/saved-moves";
 import Eval from "./eval";
+import { FenContext } from "./game-review";
+import { useContext } from "react";
 
 type MoveProp = {
   move: ReviewedMove;
 };
 
 function ReviewMove({ move }: MoveProp) {
+
+  const setFen = useContext(FenContext);
+
+  const handleClick = () => setFen!(move.moveFen);
+
   return "bookMove" in move ? (
     <div className="w-full min-h-36 p-4 border border-border rounded-lg">
-      <span className="text-xl mr-2 font-bold">{move.move}</span> is a book move
+      <span onClick={handleClick} className="cursor-pointer hover:underline text-xl mr-2 font-bold">{move.move}</span> is a book move
     </div>
   ) : (
     <div className="w-full min-h-36 p-4 flex flex-col gap-4 border border-border rounded-lg">
-      <div className="text-xl font-bold">{move.move}</div>
+      <div onClick={handleClick} className="cursor-pointer hover:underline text-xl font-bold">{move.move}</div>
       <div>
         eval before move:
         <Eval score={move.evalBefore} />

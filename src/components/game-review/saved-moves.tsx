@@ -48,6 +48,9 @@ const SavedMoves = memo(({ savedMoves, className = "" }: SaveProps) => {
             <span
               onClick={(e) => {
                 setMove(index);
+                if (currMove == index) {
+                  handleClick(savedMoves[index].fen)();
+                }
                 e.currentTarget.scrollIntoView({
                   behavior: "smooth",
                   inline: "center",

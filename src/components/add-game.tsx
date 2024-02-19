@@ -62,8 +62,9 @@ function AddGame({
             onComplete(input);
           } catch (_) {
             toast({
-              title: "Invalid PGN",
+              title: "Uh no! Invalid PGN",
               description: "Check the format of the PGN",
+              variant: "destructive",
             });
           }
         }}

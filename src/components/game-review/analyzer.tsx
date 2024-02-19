@@ -59,9 +59,10 @@ function Analyzer({ fen }: AnalProps) {
           </span>
         )}
         <ScrollArea className="rounded-lg grid place-items-center">
-          {moves.map((move) => {
+          {moves.map((move,index) => {
             return (
               <span
+                key={index}
                 onClick={handleClick(move.fen)}
                 className="m-1 whitespace-nowrap text-sm select-none"
               >

@@ -77,7 +77,7 @@
   }
 
   .fadein {
-    animation: fadein .5s linear;
+    animation: fadein 0.5s linear;
   }
 
   @keyframes rotate {
@@ -98,6 +98,24 @@
     100% {
       opacity: 1;
       transform: translateY(0px);
+    }
+  }
+
+  /* Chessboard classes */
+  html.light {
+    /** Alternating colors in rank/file labels */
+    .cg-wrap.orientation-white coords.ranks coord:nth-child(2n),
+    .cg-wrap.orientation-white coords.files coord:nth-child(2n),
+    .cg-wrap.orientation-black coords.ranks coord:nth-child(2n + 1),
+    .cg-wrap.orientation-black coords.files coord:nth-child(2n + 1) {
+      color: black;
+    }
+
+    .cg-wrap.orientation-black coords.ranks coord:nth-child(2n),
+    .cg-wrap.orientation-black coords.files coord:nth-child(2n),
+    .cg-wrap.orientation-white coords.ranks coord:nth-child(2n + 1),
+    .cg-wrap.orientation-white coords.files coord:nth-child(2n + 1) {
+      color: black;
     }
   }
 }

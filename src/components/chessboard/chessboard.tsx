@@ -5,9 +5,7 @@ import { Api } from "chessground/api";
 import { Config } from "chessground/config";
 
 import "./chessboard.css";
-// import "./chessboard.base.css";
-import "./chessboard.brown.css";
-import "./chessboard.cburnett.css";
+import "./pieces.css";
 
 interface Props {
   config?: Config;
@@ -25,6 +23,36 @@ function Chessboard({ config = {}, className = "" }: Props) {
         animation: { enabled: true, duration: 200 },
         premovable: { enabled: false },
         predroppable: { enabled: false },
+        drawable: {
+          enabled: true,
+          brushes: {
+            green: {
+              key: "e4",
+              color: "#081229",
+              lineWidth: 10,
+              opacity: 1,
+            },
+            red: {
+              key: "e4",
+              color: "#081229",
+              lineWidth: 10,
+              opacity: 1,
+            },
+            blue: {
+              key: "e4",
+              color: "#081229",
+              lineWidth: 10,
+              opacity: 1,
+            },
+            yellow: {
+              key: "e4",
+              color: "#081229",
+              lineWidth: 10,
+              opacity: 1,
+            }
+          }
+
+        }
       });
       setApi(chessgroundApi);
     } else if (ref && ref.current && api) {

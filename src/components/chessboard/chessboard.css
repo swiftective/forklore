@@ -5,6 +5,12 @@
  * board and pieces displayed!
  */
 
+/** Colored board squares as an embedded SVG */
+cg-board {
+  background-color: transparent;
+  background-image: url("./blue.svg");
+}
+
 .cg-wrap {
   width: 320px;
   height: 320px;
@@ -52,7 +58,7 @@ cg-board square {
 }
 cg-board square.move-dest {
   background: radial-gradient(
-    rgba(20, 85, 30, 0.5) 22%,
+    rgba(19, 62, 118, 0.4) 22%,
     #208530 0,
     rgba(0, 0, 0, 0.3) 0,
     rgba(0, 0, 0, 0) 0
@@ -89,10 +95,10 @@ cg-board square.premove-dest:hover {
 }
 cg-board square.last-move {
   will-change: transform;
-  background-color: rgba(155, 199, 0, 0.41);
+  background-color: rgba(16, 113, 240, 0.3);
 }
 cg-board square.selected {
-  background-color: rgba(20, 85, 30, 0.5);
+  background-color: rgba(62, 145, 229, 0.3);
 }
 cg-board square.check {
   background: radial-gradient(
@@ -186,4 +192,19 @@ cg-board piece.fading {
 }
 .cg-wrap coords.ranks coord {
   transform: translateY(39%);
+}
+
+/** Alternating colors in rank/file labels */
+.cg-wrap.orientation-white coords.ranks coord:nth-child(2n),
+.cg-wrap.orientation-white coords.files coord:nth-child(2n),
+.cg-wrap.orientation-black coords.ranks coord:nth-child(2n + 1),
+.cg-wrap.orientation-black coords.files coord:nth-child(2n + 1) {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.cg-wrap.orientation-black coords.ranks coord:nth-child(2n),
+.cg-wrap.orientation-black coords.files coord:nth-child(2n),
+.cg-wrap.orientation-white coords.ranks coord:nth-child(2n + 1),
+.cg-wrap.orientation-white coords.files coord:nth-child(2n + 1) {
+  color: rgba(255, 255, 255, 0.8);
 }
