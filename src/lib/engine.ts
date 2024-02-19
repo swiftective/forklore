@@ -142,7 +142,7 @@ function Engine() {
     })();
 
     if (!(depth && score && moves)) {
-      console.log("wtf", line);
+      console.error(`Error with parsing: ${line}`);
       return;
     }
 
@@ -152,12 +152,6 @@ function Engine() {
       stockfish.postMessage("stop");
     }
   };
-
-  // WARN: debug function
-  function cmd(command: string) {
-    console.log(command);
-    stockfish.postMessage(command);
-  }
 
   function analyze(fen: string, depth: number) {
     turnColor = fen.split(" ")[1];
@@ -178,7 +172,7 @@ function Engine() {
     stockfish.postMessage("ucinewgame");
   }
 
-  return { cmd, setOnMessage, analyze, reset };
+  return { setOnMessage, analyze, reset };
 }
 
 export const Stockfish = Engine();

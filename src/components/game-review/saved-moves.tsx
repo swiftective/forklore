@@ -51,6 +51,7 @@ const SavedMoves = memo(({ savedMoves, className = "" }: SaveProps) => {
                 e.currentTarget.scrollIntoView({
                   behavior: "smooth",
                   inline: "center",
+                  block: "nearest",
                 });
               }}
               className={cn(

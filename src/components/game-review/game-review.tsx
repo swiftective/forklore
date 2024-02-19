@@ -13,8 +13,11 @@ import { Key } from "chessground/types";
 import Analyzer from "./analyzer";
 import ReviewBoard from "@/components/game-review/review-board";
 import ReviewOpening from "@/components/game-review/review-opening";
-import ReviewNewGame from "@/components/game-review/review-new-game";
+import ReviewNewGameButton from "@/components/game-review/review-new-game";
 import { usePromotion } from "@/components/game-review/promotion-context";
+import { Button } from "../ui/button";
+import { History, HistoryType } from "@/components/game-review/fen-history";
+import HistoryButton from "./history-button";
 
 export const FenContext = createContext<((fen: string) => void) | null>(null);
 
@@ -31,6 +34,12 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
   const [fen, setFen] = useState(initFen);
 
   const chess = useMemo(() => new Chess(), []);
+
+  const fenHistory = useMemo<HistoryType>(() => History(), []);
+
+  useEffect(() => {
+    fenHistory.add(fen);
+  }, [fen]);
 
   const getDests = useCallback((chess: Chess) => {
     const map = new Map<Key, Key[]>();
@@ -130,7 +139,15 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
         <Analyzer fen={fen} />
         <ReviewOpening opening={reviewInput.opening} />
         <ReviewBoard moves={reviewInput.review} />
-        <ReviewNewGame fn={newGame} />
+        <div className="flex gap-2 my-5">
+        <HistoryButton
+          className="border border-border"
+          handleClick={() => {
+            setCurrFen(fenHistory.back());
+          }}
+        />
+        <ReviewNewGameButton fn={newGame} />
+        </div>
       </div>
     </FenContext.Provider>
   );

@@ -9,6 +9,8 @@ import Loading from "@/components/loading";
 import GameReviewPromotion from "./components/game-review";
 import { ReviewReport } from "./lib/reviewer";
 
+import {reviewTest} from "@/lib/review-test"
+
 const initFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const initConfig: ChessConfig = {
   fen: initFen,
@@ -27,7 +29,7 @@ export const ConfigContext = createContext<SetConfig>(null);
 
 function App() {
   const [gameState, setGameState] = useState<"start" | "loading" | "review">(
-    "start",
+    "review",
   );
 
   const [gameInput, setGameInput] = useState<AddGameInput>({
@@ -46,7 +48,6 @@ function App() {
 
   const loadOnComplete = useCallback((review: ReviewReport) => {
     setReview(review);
-    console.log(review);
     setGameState("review");
   }, []);
 
@@ -60,9 +61,10 @@ function App() {
               <AddGame onComplete={addOnComplete} />
             ) : gameState == "loading" ? (
               <Loading input={gameInput} onComplete={loadOnComplete} />
-            ) : gameState == "review" && review != null ? (
+            // ) : gameState == "review" && review != null ? (
+            ) : gameState == "review"? (
               <GameReviewPromotion
-                reviewInput={review}
+                reviewInput={reviewTest}
                 newGame={() => {
                   setConfig(initConfig);
                   setGameState("start");

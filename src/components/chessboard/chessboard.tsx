@@ -5,7 +5,7 @@ import { Api } from "chessground/api";
 import { Config } from "chessground/config";
 
 import "./chessboard.css";
-import "./chessboard.base.css";
+// import "./chessboard.base.css";
 import "./chessboard.brown.css";
 import "./chessboard.cburnett.css";
 
@@ -23,6 +23,8 @@ function Chessboard({ config = {}, className = "" }: Props) {
     if (ref && ref.current && !api) {
       const chessgroundApi = ChessgroundApi(ref.current, {
         animation: { enabled: true, duration: 200 },
+        premovable: { enabled: false },
+        predroppable: { enabled: false },
       });
       setApi(chessgroundApi);
     } else if (ref && ref.current && api) {

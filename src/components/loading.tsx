@@ -41,6 +41,7 @@ function Loading({
 
     const movesString = moves.join("\t");
 
+    //@ts-expect-error Module call from emscripten
     const openingData = Module.ccall(
       "get_opening",
       "string",
@@ -56,7 +57,6 @@ function Loading({
       Number(openingInfo[2]),
       (info) => {
         onComplete(info);
-        console.log(info);
       },
       (progress, fen) => {
         setProgess(progress);

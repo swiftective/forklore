@@ -129,7 +129,7 @@ cg-board piece.fading {
   opacity: 0.5;
 }
 .cg-wrap square.move-dest:hover {
-  background-color: rgba(20, 85, 30, 0.3);
+  background-color: hsla(212, 100%, 48%, 0.3);
 }
 .cg-wrap piece.ghost {
   opacity: 0.3;

@@ -150,9 +150,8 @@ export function Reviewer(
       return;
     }
 
-    // WARN: debug print
     if (reviewedMoves > fens.length) {
-      console.log("WTF");
+      console.error("Review moves exceed number of moves");
       return;
     }
 

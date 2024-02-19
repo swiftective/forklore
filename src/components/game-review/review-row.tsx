@@ -36,19 +36,21 @@ function ReviewRow({ id, move1, move2 }: RowProps) {
           >
             {move1.move}
           </span>
-          <span
-            onClick={() => {
-              setFen!(move2.moveFen);
-              setMove(2);
-            }}
-            className="hover:underline w-36"
-          >
-            {move2.move}
-          </span>
+          {move2 == undefined ? null : (
+            <span
+              onClick={() => {
+                setFen!(move2.moveFen);
+                setMove(2);
+              }}
+              className="hover:underline w-36"
+            >
+              {move2.move}
+            </span>
+          )}
         </div>
       </AccordionTrigger>
       <AccordionContent>
-        {selectedMove == 1 ? (
+        {selectedMove == 1 || move2 == undefined ? (
           <ReviewMove move={move1} />
         ) : (
           <ReviewMove move={move2} />
