@@ -1,29 +1,22 @@
 import { PromotionPiece } from "@/components/game-review/promotion-dialog";
-import { FaChessKnight as Knight } from "react-icons/fa";
-import { GiQueenCrown as Queen } from "react-icons/gi";
-import { TbChessBishopFilled as Bishop } from "react-icons/tb";
-import { FaChessRook as Rook } from "react-icons/fa";
+
+import "./promotion.css";
+import { cn } from "@/lib/utils";
 
 type PProps = {
   handleClick: () => void;
   piece: PromotionPiece;
+  color: "white" | "black",
 };
 
-function MyPiece({ piece, handleClick: onclick }: PProps) {
-  const className = "size-20 hover:scale-150 transition-all";
+function MyPiece({ piece, handleClick, color }: PProps) {
+  const className = "hover:scale-150 transition-transform size-20";
 
   return (
-    <div onClick={onclick}>
-      {piece == "q" ? (
-        <Queen className={className} />
-      ) : piece == "r" ? (
-        <Rook className={className} />
-      ) : piece == "b" ? (
-        <Bishop className={className} />
-      ) : (
-        <Knight className={className} />
-      )}
-    </div>
+    <div
+      onClick={handleClick}
+      className={cn(className, `promotion-piece promotion-${piece}-${color}`)}
+    ></div>
   );
 }
 

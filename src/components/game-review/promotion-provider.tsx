@@ -8,27 +8,28 @@ type PPProps = {
 
 function PromotionProvider({ children }: PPProps) {
   const [open, setOpen] = useState(false);
-  const [select, setSelect] = useState({
-    select: (piece: string) => console.log(piece)
-  });
+  const [color, setColor] = useState<"white"|"black">("white");
+  const [select, setSelect] = useState(
+    () => ((piece: string) => console.log(piece)),
+  );
 
   return (
     <>
       <PromotionContext.Provider
-        value={(fn) => {
-          setSelect({
-            select: fn,
-          });
+        value={(fn, color) => {
+          setSelect(() => fn);
           setOpen(true);
+          setColor(color);
         }}
       >
         {children}
       </PromotionContext.Provider>
       <PromotionDialog
         open={open}
+        color={color}
         select={(piece: string) => {
-            select.select(piece);
-            setOpen(false);
+          select(piece);
+          setOpen(false);
         }}
       />
     </>

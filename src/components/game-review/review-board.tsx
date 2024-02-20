@@ -17,7 +17,7 @@ const ReviewBoard = memo(({ moves }: { moves: ReviewedMove[] }) => {
           const move2 = moves[index + 1];
           const moveNumber = index / 2 + 1;
 
-          return <ReviewRow id={moveNumber} move1={move1} move2={move2} />;
+          return <ReviewRow key={moveNumber} id={moveNumber} move1={move1} move2={move2} />;
         })}
       </Accordion>
     </ScrollArea>

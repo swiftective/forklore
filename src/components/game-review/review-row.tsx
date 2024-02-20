@@ -22,7 +22,6 @@ function ReviewRow({ id, move1, move2 }: RowProps) {
   return (
     <AccordionItem value={"move" + id}>
       <AccordionTrigger
-        key={id}
         className="hover:no-underline w-full fadein text-start"
       >
         <div className="flex gap-4">

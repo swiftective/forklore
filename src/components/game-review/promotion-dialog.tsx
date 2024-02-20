@@ -5,11 +5,12 @@ import MyPiece from "./my-piece";
 type DialogProps = {
   open: boolean;
   select: (piece: string) => void;
+  color: "white" | "black";
 };
 
 export type PromotionPiece = "q" | "b" | "r" | "n";
 
-const PromotionDialog = memo(({ open, select }: DialogProps) => {
+const PromotionDialog = memo(({ open, select, color }: DialogProps) => {
   const pieces: PromotionPiece[] = ["q", "b", "r", "n"];
 
   const handleClick = (piece: PromotionPiece) => {
@@ -18,9 +19,9 @@ const PromotionDialog = memo(({ open, select }: DialogProps) => {
 
   return (
     <AlertDialog open={open}>
-      <AlertDialogContent className="flex justify-around">
-        {pieces.map((p) => {
-          return <MyPiece piece={p} handleClick={handleClick(p)} />;
+      <AlertDialogContent className="flex justify-around bg-orange-100">
+        {pieces.map((p, index) => {
+          return <MyPiece color={color} key={index} piece={p} handleClick={handleClick(p)} />;
         })}
       </AlertDialogContent>
     </AlertDialog>

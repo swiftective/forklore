@@ -105,7 +105,7 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
                     color: getTurn(chess),
                   },
                 }));
-              });
+              }, getTurn(chess));
 
               return;
             }
