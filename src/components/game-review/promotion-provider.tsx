@@ -8,9 +8,9 @@ type PPProps = {
 
 function PromotionProvider({ children }: PPProps) {
   const [open, setOpen] = useState(false);
-  const [color, setColor] = useState<"white"|"black">("white");
+  const [color, setColor] = useState<"white" | "black">("white");
   const [select, setSelect] = useState(
-    () => ((piece: string) => console.log(piece)),
+    () => (piece: string) => console.log(piece),
   );
 
   return (

@@ -139,13 +139,13 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
         <ReviewOpening opening={reviewInput.opening} />
         <ReviewBoard moves={reviewInput.review} />
         <div className="flex gap-2 my-5">
-        <HistoryButton
-          className="border border-border"
-          handleClick={() => {
-            setCurrFen(fenHistory.back());
-          }}
-        />
-        <ReviewNewGameButton fn={newGame} />
+          <HistoryButton
+            className="border border-border"
+            handleClick={() => {
+              setCurrFen(fenHistory.back());
+            }}
+          />
+          <ReviewNewGameButton fn={newGame} />
         </div>
       </div>
     </FenContext.Provider>

@@ -63,8 +63,7 @@ function App() {
                 <AddGame onComplete={addOnComplete} />
               ) : gameState == "loading" ? (
                 <Loading input={gameInput} onComplete={loadOnComplete} />
-              ) :
-              gameState == "review" && review != null ? (
+              ) : gameState == "review" && review != null ? (
                 <GameReviewPromotion
                   reviewInput={review}
                   newGame={() => {

@@ -21,7 +21,14 @@ const PromotionDialog = memo(({ open, select, color }: DialogProps) => {
     <AlertDialog open={open}>
       <AlertDialogContent className="flex justify-around bg-orange-100">
         {pieces.map((p, index) => {
-          return <MyPiece color={color} key={index} piece={p} handleClick={handleClick(p)} />;
+          return (
+            <MyPiece
+              color={color}
+              key={index}
+              piece={p}
+              handleClick={handleClick(p)}
+            />
+          );
         })}
       </AlertDialogContent>
     </AlertDialog>

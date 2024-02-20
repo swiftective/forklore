@@ -1,6 +1,6 @@
 import { Chess } from "chess.js";
 import { Stockfish as engine } from "./engine";
-import {Move} from "@/lib/engine"
+import { Move } from "@/lib/engine";
 
 export type ReviewedMoveTemp =
   | {

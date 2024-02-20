@@ -8,7 +8,7 @@ type Props = {
   className?: string;
 };
 
-const ReviewNewGameButton = memo(({ fn, className="" }: Props) => {
+const ReviewNewGameButton = memo(({ fn, className = "" }: Props) => {
   return (
     <Button onClick={fn} className={cn("font-bold h-8 p-3 pr-5", className)}>
       <Icon className="m-1 size-6" /> New Game

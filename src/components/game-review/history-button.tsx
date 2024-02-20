@@ -6,15 +6,19 @@ import { cn } from "@/lib/utils";
 
 type ButtonProps = {
   handleClick: () => void;
-  className?: string
+  className?: string;
 };
 
-const HistoryButton = memo(({ handleClick, className="" }: ButtonProps) => {
+const HistoryButton = memo(({ handleClick, className = "" }: ButtonProps) => {
   return (
-    <Button className={cn("h-8 p-3", className)} variant="ghost" onClick={handleClick}>
-      <BackIcon/>
+    <Button
+      className={cn("h-8 p-3", className)}
+      variant="ghost"
+      onClick={handleClick}
+    >
+      <BackIcon />
     </Button>
   );
-})
+});
 
 export default HistoryButton;

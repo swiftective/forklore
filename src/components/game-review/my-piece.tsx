@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 type PProps = {
   handleClick: () => void;
   piece: PromotionPiece;
-  color: "white" | "black",
+  color: "white" | "black";
 };
 
 function MyPiece({ piece, handleClick, color }: PProps) {

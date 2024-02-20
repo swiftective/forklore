@@ -55,11 +55,11 @@ function Analyzer({ fen }: AnalProps) {
           </span>
         ) : (
           <span className="size-6 p-1">
-            <Spinner className="animate-spin size-full mx-1"/>
+            <Spinner className="animate-spin size-full mx-1" />
           </span>
         )}
         <ScrollArea className="rounded-lg grid place-items-center">
-          {moves.map((move,index) => {
+          {moves.map((move, index) => {
             return (
               <span
                 key={index}

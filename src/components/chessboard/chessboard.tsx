@@ -49,10 +49,9 @@ function Chessboard({ config = {}, className = "" }: Props) {
               color: "#081229",
               lineWidth: 10,
               opacity: 1,
-            }
-          }
-
-        }
+            },
+          },
+        },
       });
       setApi(chessgroundApi);
     } else if (ref && ref.current && api) {
