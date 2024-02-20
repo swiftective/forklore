@@ -93,36 +93,14 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
             if (isPromotion) {
               promptPromotion!((piece) => {
                 chess.move({ from: from, to: to, promotion: piece });
-
-                setFen(chess.fen());
-
-                setConfig!(() => ({
-                  turnColor: getTurn(chess),
-                  check: chess.isCheck(),
-                  fen: chess.fen(),
-                  movable: {
-                    dests: getDests(chess),
-                    color: getTurn(chess),
-                  },
-                }));
+                setCurrFen(chess.fen());
               }, getTurn(chess));
 
               return;
             }
 
             chess.move({ from: from, to: to });
-
-            setFen(chess.fen());
-
-            setConfig!(() => ({
-              turnColor: getTurn(chess),
-              check: chess.isCheck(),
-              fen: chess.fen(),
-              movable: {
-                dests: getDests(chess),
-                color: getTurn(chess),
-              },
-            }));
+            setCurrFen(chess.fen());
           },
         },
       },

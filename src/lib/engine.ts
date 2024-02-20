@@ -79,6 +79,7 @@ function Engine() {
       }
 
       chess.move(move);
+
       const lastMove = chess.history({ verbose: true }).pop();
 
       if (lastMove == undefined) return null;
@@ -138,10 +139,17 @@ function Engine() {
 
       const uciMoves = temp.split(" ");
 
-      return uciToMoves(uciMoves);
+      try {
+        const moves = uciToMoves(uciMoves);
+        return moves;
+      } catch (_) {
+        return null;
+      }
     })();
 
-    if (!(depth && score && moves)) {
+    if (moves == null) return;
+
+    if (!(depth && score)) {
       console.error(`Error with parsing: ${line}`);
       return;
     }

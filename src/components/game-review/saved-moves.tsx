@@ -46,6 +46,7 @@ const SavedMoves = memo(({ savedMoves, className = "" }: SaveProps) => {
         {savedMoves.map((move, index) => {
           return (
             <span
+              key={index}
               onClick={(e) => {
                 setMove(index);
                 if (currMove == index) {
