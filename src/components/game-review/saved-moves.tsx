@@ -24,6 +24,10 @@ const SavedMoves = memo(({ savedMoves, className = "" }: SaveProps) => {
     handleClick(savedMoves[currMove].fen)();
   }, [currMove]);
 
+  useEffect(() => {
+    setMove(-1);
+  }, [savedMoves]);
+
   return (
     <div className="w-full flex place-items-center overflow-hidden h-full">
       {savedMoves.length != 0 ? (
