@@ -133,23 +133,6 @@ export function Reviewer(
 
     chess.load(fens[reviewedMoves].after);
 
-    if (chess.isCheckmate()) {
-      setTimeout(() => {
-        movesReviewed.push({
-          move: gameMoves[reviewedMoves],
-          moveFen: fens[reviewedMoves].after,
-          bestMoves: moves,
-          eval: score,
-        });
-        onProgress(
-          ((reviewedMoves + 1) / fens.length) * 100,
-          fens[reviewedMoves].after,
-        );
-        reviewDone();
-      }, 300);
-      return;
-    }
-
     if (reviewedMoves > fens.length) {
       console.error("Review moves exceed number of moves");
       return;

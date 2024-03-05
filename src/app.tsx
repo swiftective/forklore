@@ -15,6 +15,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 const initFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const initConfig: ChessConfig = {
   fen: initFen,
+  check: false,
   highlight: {
     lastMove: false,
   },
