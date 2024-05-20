@@ -12,14 +12,11 @@ const ReviewBoard = memo(({ moves }: { moves: ReviewedMove[] }) => {
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
       e.preventDefault();
+
       if (e.key != "ArrowRight") return;
-      if (curr == null) {
-        setCurr(0);
-        setFen!(moves[0].moveFen);
-      } else {
-        setCurr(curr + 1);
-        setFen!(moves[curr + 1].moveFen);
-      }
+      const val = curr == null ? 0 : curr + 1 >= moves.length ? curr : curr + 1;
+      setCurr(val);
+      setFen!(moves[val].moveFen);
     },
     [setCurr, curr, moves, setFen],
   );
