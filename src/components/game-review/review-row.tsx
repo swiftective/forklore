@@ -1,59 +1,43 @@
 import { ReviewedMove } from "@/lib/reviewer";
-import {
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "../ui/accordion";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { FenContext } from "./game-review";
-import ReviewMove from "./review-move";
 
 type RowProps = {
   id: number;
   move1: ReviewedMove;
   move2: ReviewedMove;
+  idx1: number;
+  idx2: number;
+  handleClick: (idx: number) => void;
 };
 
-function ReviewRow({ id, move1, move2 }: RowProps) {
-  const [selectedMove, setMove] = useState<1 | 2>(1);
-
+function ReviewRow({ id, move1, move2, idx1, idx2, handleClick }: RowProps) {
   const setFen = useContext(FenContext);
 
   return (
-    <AccordionItem value={"move" + id}>
-      <AccordionTrigger className="hover:no-underline w-full fadein text-start">
-        <div className="flex gap-4">
-          <span className="w-24">{id}.</span>
-          <span
-            onClick={() => {
-              setFen!(move1.moveFen);
-              setMove(1);
-            }}
-            className="hover:underline w-36"
-          >
-            {move1.move}
-          </span>
-          {move2 == undefined ? null : (
-            <span
-              onClick={() => {
-                setFen!(move2.moveFen);
-                setMove(2);
-              }}
-              className="hover:underline w-36"
-            >
-              {move2.move}
-            </span>
-          )}
-        </div>
-      </AccordionTrigger>
-      <AccordionContent>
-        {selectedMove == 1 || move2 == undefined ? (
-          <ReviewMove move={move1} />
-        ) : (
-          <ReviewMove move={move2} />
-        )}
-      </AccordionContent>
-    </AccordionItem>
+    <div className="flex fadein gap-4 p-4 font-medium border-b">
+      <span className="w-24">{id}.</span>
+      <span
+        onClick={() => {
+          setFen!(move1.moveFen);
+          handleClick(idx1);
+        }}
+        className="hover:underline w-36 cursor-pointer"
+      >
+        {move1.move}
+      </span>
+      {move2 == undefined ? null : (
+        <span
+          onClick={() => {
+            setFen!(move2.moveFen);
+            handleClick(idx2);
+          }}
+          className="hover:underline w-36 cursor-pointer"
+        >
+          {move2.move}
+        </span>
+      )}
+    </div>
   );
 }
 

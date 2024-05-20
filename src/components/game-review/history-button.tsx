@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useCallback, useEffect } from "react";
 import { Button } from "../ui/button";
 
 import { IoChevronBack as BackIcon } from "react-icons/io5";
@@ -10,6 +10,20 @@ type ButtonProps = {
 };
 
 const HistoryButton = memo(({ handleClick, className = "" }: ButtonProps) => {
+  const handleKey = useCallback(
+    (e: KeyboardEvent) => {
+      e.preventDefault();
+      if (e.key != "ArrowLeft") return;
+      handleClick();
+    },
+    [handleClick],
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  });
+
   return (
     <Button
       className={cn("h-8 p-3", className)}

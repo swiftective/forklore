@@ -2,7 +2,7 @@ import { ReviewedMove } from "@/lib/reviewer";
 import SavedMoves from "@/components/game-review/saved-moves";
 import Eval from "./eval";
 import { FenContext } from "./game-review";
-import { useContext } from "react";
+import { useContext, useEffect, useRef } from "react";
 
 type MoveProp = {
   move: ReviewedMove;
@@ -13,8 +13,26 @@ function ReviewMove({ move }: MoveProp) {
 
   const handleClick = () => setFen!(move.moveFen);
 
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const { current } = ref;
+    if (current !== null) {
+      setTimeout(() => {
+        current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+          inline: "nearest",
+        });
+      }, 10);
+    }
+  }, []);
+
   return "bookMove" in move ? (
-    <div className="w-full min-h-36 p-4 border border-border rounded-lg">
+    <div
+      ref={ref}
+      className="w-full min-h-36 p-4 border border-border rounded-lg"
+    >
       <span
         onClick={handleClick}
         className="cursor-pointer hover:underline text-xl mr-2 font-bold"
@@ -24,7 +42,10 @@ function ReviewMove({ move }: MoveProp) {
       is a book move
     </div>
   ) : (
-    <div className="w-full min-h-36 p-4 flex flex-col gap-4 border border-border rounded-lg">
+    <div
+      ref={ref}
+      className="w-full min-h-36 p-4 flex flex-col gap-4 border border-border rounded-lg"
+    >
       <div
         onClick={handleClick}
         className="cursor-pointer hover:underline text-xl font-bold"
