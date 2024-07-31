@@ -102,6 +102,9 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
             }
 
             chess.move({ from: from, to: to });
+
+            playSound(chess);
+
             setCurrFen(chess.fen());
           },
         },
@@ -142,6 +145,23 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
       </div>
     </FenContext.Provider>
   );
+}
+
+function playSound(chess: Chess) {
+  const isCapture = chess.history().pop()?.includes("x");
+
+  let audio: HTMLAudioElement;
+
+  if (chess.isCheckmate() || chess.isStalemate()) {
+    audio = new Audio("gameover.mp3");
+  } else if (isCapture) {
+    audio = new Audio("capture.mp3");
+  } else {
+    audio = new Audio("move.mp3");
+  }
+
+  audio.volume = 0.5;
+  audio.play();
 }
 
 export default GameReview;
