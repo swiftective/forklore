@@ -65,25 +65,25 @@ devDependencies:
     specifier: ^20.11.16
     version: 20.11.16
   '@types/react':
-    specifier: ^18.2.43
+    specifier: ^18.2.51
     version: 18.2.51
   '@types/react-dom':
-    specifier: ^18.2.17
+    specifier: ^18.2.18
     version: 18.2.18
   '@typescript-eslint/eslint-plugin':
-    specifier: ^6.14.0
+    specifier: ^6.20.0
     version: 6.20.0(@typescript-eslint/parser@6.20.0)(eslint@8.56.0)(typescript@5.3.3)
   '@typescript-eslint/parser':
-    specifier: ^6.14.0
+    specifier: ^6.20.0
     version: 6.20.0(eslint@8.56.0)(typescript@5.3.3)
   '@vitejs/plugin-react-swc':
-    specifier: ^3.5.0
+    specifier: ^3.6.0
     version: 3.6.0(vite@5.0.13)
   autoprefixer:
     specifier: ^10.4.17
     version: 10.4.17(postcss@8.4.33)
   eslint:
-    specifier: ^8.55.0
+    specifier: ^8.56.0
     version: 8.56.0
   eslint-plugin-react-hooks:
     specifier: ^4.6.0
@@ -98,7 +98,7 @@ devDependencies:
     specifier: ^3.4.1
     version: 3.4.1
   typescript:
-    specifier: ^5.2.2
+    specifier: ^5.3.3
     version: 5.3.3
   vite:
     specifier: ^5.0.13
@@ -1672,7 +1672,7 @@ packages:
       postcss: ^8.1.0
     dependencies:
       browserslist: 4.22.3
-      caniuse-lite: 1.0.30001583
+      caniuse-lite: 1.0.30001645
       fraction.js: 4.3.7
       normalize-range: 0.1.2
       picocolors: 1.0.0
@@ -1710,7 +1710,7 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001583
+      caniuse-lite: 1.0.30001645
       electron-to-chromium: 1.4.656
       node-releases: 2.0.14
       update-browserslist-db: 1.0.13(browserslist@4.22.3)
@@ -1725,8 +1725,8 @@ packages:
     resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
     engines: {node: '>= 6'}
 
-  /caniuse-lite@1.0.30001583:
-    resolution: {integrity: sha512-acWTYaha8xfhA/Du/z4sNZjHUWjkiuoAi2LM+T/aL+kemKQgPT1xBb/YKjlQ0Qo8gvbHsGNplrEJ+9G3gL7i4Q==}
+  /caniuse-lite@1.0.30001645:
+    resolution: {integrity: sha512-GFtY2+qt91kzyMk6j48dJcwJVq5uTkk71XxE3RtScx7XWRLsO7bU44LOFkOZYR8w9YMS0UhPSYpN/6rAMImmLw==}
     dev: true
 
   /chalk@4.1.2:
