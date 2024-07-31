@@ -13,10 +13,24 @@ const ReviewBoard = memo(({ moves }: { moves: ReviewedMove[] }) => {
     (e: KeyboardEvent) => {
       e.preventDefault();
 
-      if (e.key != "ArrowRight") return;
-      const val = curr == null ? 0 : curr + 1 >= moves.length ? curr : curr + 1;
-      setCurr(val);
-      setFen!(moves[val].moveFen);
+      if (["ArrowUp", "w"].includes(e.key)) {
+        const val =
+          curr == null ? 0 : curr + 1 >= moves.length ? curr : curr + 1;
+        setCurr(val);
+        setFen!(moves[val].moveFen);
+      }
+
+      if (["ArrowDown", "s"].includes(e.key)) {
+        const val = curr == null ? 0 : curr - 1 <= 0 ? 0 : curr - 1;
+        setCurr(val);
+        setFen!(moves[val].moveFen);
+      }
+
+      if (e.key == "f") {
+        if (curr == null) return;
+        setCurr(curr);
+        setFen!(moves[curr].moveFen);
+      }
     },
     [setCurr, curr, moves, setFen],
   );

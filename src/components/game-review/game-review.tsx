@@ -17,6 +17,8 @@ import ReviewNewGameButton from "@/components/game-review/review-new-game";
 import { usePromotion } from "@/components/game-review/promotion-context";
 import { History, HistoryType } from "@/components/game-review/fen-history";
 import HistoryButton from "./history-button";
+import { IoChevronBack as BackIcon } from "react-icons/io5";
+import { IoChevronForward as ForIcon } from "react-icons/io5";
 
 export const FenContext = createContext<((fen: string) => void) | null>(null);
 
@@ -119,8 +121,20 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
         <div className="flex gap-2 my-5">
           <HistoryButton
             className="border border-border"
+            icon={<BackIcon />}
+            onKeys={["ArrowLeft", "a"]}
             handleClick={() => {
               setCurrFen(fenHistory.back());
+            }}
+          />
+          <HistoryButton
+            className="border border-border"
+            icon={<ForIcon />}
+            onKeys={["ArrowRight", "d"]}
+            handleClick={() => {
+              const fen = fenHistory.forward();
+              if (!fen) return;
+              setCurrFen(fen);
             }}
           />
           <ReviewNewGameButton fn={newGame} />
