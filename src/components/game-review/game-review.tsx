@@ -19,6 +19,7 @@ import { History, HistoryType } from "@/components/game-review/fen-history";
 import HistoryButton from "./history-button";
 import { IoChevronBack as BackIcon } from "react-icons/io5";
 import { IoChevronForward as ForIcon } from "react-icons/io5";
+import playAudio from "./audio.ts";
 
 export const FenContext = createContext<((fen: string) => void) | null>(null);
 
@@ -103,7 +104,7 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
 
             chess.move({ from: from, to: to });
 
-            playSound(chess);
+            playAudio(chess.history().pop(), chess.fen());
 
             setCurrFen(chess.fen());
           },
@@ -145,23 +146,6 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
       </div>
     </FenContext.Provider>
   );
-}
-
-function playSound(chess: Chess) {
-  const isCapture = chess.history().pop()?.includes("x");
-
-  let audio: HTMLAudioElement;
-
-  if (chess.isCheckmate() || chess.isStalemate()) {
-    audio = new Audio("gameover.mp3");
-  } else if (isCapture) {
-    audio = new Audio("capture.mp3");
-  } else {
-    audio = new Audio("move.mp3");
-  }
-
-  audio.volume = 0.5;
-  audio.play();
 }
 
 export default GameReview;

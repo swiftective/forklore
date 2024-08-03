@@ -4,6 +4,7 @@ import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { GrFormNext as NextIcon } from "react-icons/gr";
 import { FenContext } from "./game-review";
+import playAudio from "./audio.ts";
 
 type SaveProps = {
   savedMoves: Move[];
@@ -19,9 +20,13 @@ const SavedMoves = memo(({ savedMoves, className = "" }: SaveProps) => {
   }, []);
 
   useEffect(() => {
-    if (!savedMoves[currMove]) return;
+    const MOVE = savedMoves[currMove];
 
-    handleClick(savedMoves[currMove].fen)();
+    if (!MOVE) return;
+
+    handleClick(MOVE.fen)();
+
+    playAudio(MOVE.move, MOVE.fen);
   }, [currMove]);
 
   useEffect(() => {

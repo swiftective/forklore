@@ -6,6 +6,7 @@ import { Info, Move, Stockfish as engine } from "@/lib/engine";
 import { cn } from "@/lib/utils";
 import { FenContext } from "./game-review";
 import SavedMoves from "@/components/game-review/saved-moves";
+import playAudio from "./audio";
 
 const DEPTH = 22;
 
@@ -63,7 +64,10 @@ function Analyzer({ fen }: AnalProps) {
             return (
               <span
                 key={index}
-                onClick={handleClick(move.fen)}
+                onClick={() => {
+                  handleClick(move.fen)();
+                  playAudio(move.move, move.fen);
+                }}
                 className="m-1 whitespace-nowrap text-sm select-none"
               >
                 {move.move}

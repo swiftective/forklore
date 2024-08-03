@@ -3,6 +3,7 @@ import SavedMoves from "@/components/game-review/saved-moves";
 import Eval from "./eval";
 import { FenContext } from "./game-review";
 import { useContext, useEffect, useRef } from "react";
+import playAudio from "./audio";
 
 type MoveProp = {
   move: ReviewedMove;
@@ -27,6 +28,10 @@ function ReviewMove({ move }: MoveProp) {
       }, 10);
     }
   }, []);
+
+  useEffect(() => {
+    playAudio(move.move, move.moveFen);
+  }, [move]);
 
   return "bookMove" in move ? (
     <div
