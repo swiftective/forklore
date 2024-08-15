@@ -11,6 +11,7 @@ import { ReviewReport } from "./lib/reviewer";
 
 import { FaGithub as GithubIcon } from "react-icons/fa";
 import { ModeToggle } from "@/components/mode-toggle";
+import { useToast } from "@/components/ui/use-toast";
 
 const initFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 const initConfig: ChessConfig = {
@@ -30,6 +31,8 @@ type SetConfig = React.Dispatch<React.SetStateAction<ChessConfig>> | null;
 export const ConfigContext = createContext<SetConfig>(null);
 
 function App() {
+  const { toast } = useToast();
+
   const [gameState, setGameState] = useState<"start" | "loading" | "review">(
     "start",
   );
@@ -53,6 +56,16 @@ function App() {
     setGameState("review");
   }, []);
 
+  const loadOnError = useCallback(() => {
+    setGameInput({ pgn: "", player: "white" });
+    setGameState("start");
+    toast({
+      title: "Error while processing pgn",
+      description: "Check the format of the pgn",
+      variant: "destructive",
+    });
+  }, []);
+
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <ConfigContext.Provider value={setConfig}>
@@ -63,7 +76,11 @@ function App() {
               {gameState == "start" ? (
                 <AddGame onComplete={addOnComplete} />
               ) : gameState == "loading" ? (
-                <Loading input={gameInput} onComplete={loadOnComplete} />
+                <Loading
+                  input={gameInput}
+                  onComplete={loadOnComplete}
+                  onError={loadOnError}
+                />
               ) : gameState == "review" && review != null ? (
                 <GameReviewPromotion
                   reviewInput={review}

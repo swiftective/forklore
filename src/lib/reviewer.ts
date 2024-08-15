@@ -145,6 +145,11 @@ export function Reviewer(
 
   setTimeout(
     () => {
+      if (chess.history().length == bookMoves) {
+        reviewDone();
+        return;
+      }
+
       engine.analyze(fens[bookMoves].before, reviewDepth);
     },
     400 * (bookMoves + 1),

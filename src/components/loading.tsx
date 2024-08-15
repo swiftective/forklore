@@ -9,9 +9,11 @@ import { ReviewReport, Reviewer } from "@/lib/reviewer";
 function Loading({
   input,
   onComplete,
+  onError,
 }: {
   input: AddGameInput;
   onComplete: (info: ReviewReport) => void;
+  onError: () => void;
 }) {
   const [progress, setProgess] = useState<number>(0);
 
@@ -48,6 +50,11 @@ function Loading({
       ["string"],
       [movesString],
     );
+
+    if (!openingData) {
+      onError();
+      return;
+    }
 
     const openingInfo = openingData.split("\n");
 

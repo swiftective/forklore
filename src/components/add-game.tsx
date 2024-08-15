@@ -59,6 +59,9 @@ function AddGame({
               return;
             }
             chess.loadPgn(input.pgn);
+            if (chess.history().length <= 0) {
+              throw "Invalid pgn";
+            }
             onComplete(input);
           } catch (_) {
             toast({
