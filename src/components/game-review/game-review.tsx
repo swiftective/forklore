@@ -96,7 +96,10 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
             if (isPromotion) {
               promptPromotion!((piece) => {
                 chess.move({ from: from, to: to, promotion: piece });
+                const move = chess.history().pop();
+
                 setCurrFen(chess.fen());
+                playAudio(move, chess.fen());
               }, getTurn(chess));
 
               return;
