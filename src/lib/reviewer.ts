@@ -98,7 +98,6 @@ export function Reviewer(
     });
 
     setTimeout(() => {
-      console.log({ opening, review: reviewTemp });
       onComplete({ opening, review: reviewTemp });
     }, 300);
   }

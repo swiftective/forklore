@@ -1,13 +1,20 @@
 import { ReviewedMove } from "@/lib/reviewer";
-import { ScrollArea } from "../ui/scroll-area";
+import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import ReviewRow from "./review-row";
 import { memo, useCallback, useContext, useEffect, useState } from "react";
 import ReviewMove from "./review-move";
 import { BoardContext } from "./game-review";
+import { EvalChart } from "./eval-chart";
 
 const ReviewBoard = memo(({ moves }: { moves: ReviewedMove[] }) => {
   const [curr, setCurr] = useState<number | null>(null);
   const setBoard = useContext(BoardContext);
+
+  const setCurrBoard = useCallback((idx: number) => {
+    setCurr(idx);
+    const { moveFen: fen, dest, move } = moves[idx];
+    setBoard!(fen, dest, move);
+  }, []);
 
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
@@ -43,35 +50,39 @@ const ReviewBoard = memo(({ moves }: { moves: ReviewedMove[] }) => {
   });
 
   return (
-    <ScrollArea className="flex-auto">
-      {moves.map((move, index) => {
-        if (index % 2 == 1) {
-          return;
-        }
+    <>
+      <EvalChart review={moves} setCurr={setCurrBoard} />
+      <ScrollArea className="flex-auto mt-3">
+        {moves.map((move, index) => {
+          if (index % 2 == 1) {
+            return;
+          }
 
-        const move1 = move;
-        const move2 = moves[index + 1];
-        const moveNumber = index / 2 + 1;
+          const move1 = move;
+          const move2 = moves[index + 1];
+          const moveNumber = index / 2 + 1;
 
-        return (
-          <>
-            <ReviewRow
-              key={moveNumber}
-              id={moveNumber}
-              move1={move1}
-              idx1={index}
-              idx2={index + 1}
-              handleClick={(index: number) => setCurr(index)}
-              move2={move2}
-            />
+          return (
+            <>
+              <ReviewRow
+                key={moveNumber}
+                id={moveNumber}
+                move1={move1}
+                idx1={index}
+                idx2={index + 1}
+                handleClick={(index: number) => setCurr(index)}
+                move2={move2}
+              />
 
-            {curr != null && (curr == index || curr - 1 == index) ? (
-              <ReviewMove move={moves[curr]} />
-            ) : null}
-          </>
-        );
-      })}
-    </ScrollArea>
+              {curr != null && (curr == index || curr - 1 == index) ? (
+                <ReviewMove move={moves[curr]} />
+              ) : null}
+            </>
+          );
+        })}
+        <ScrollBar className="w-[1px]" />
+      </ScrollArea>
+    </>
   );
 });
 
