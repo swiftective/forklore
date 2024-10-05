@@ -13,7 +13,6 @@ const HistoryButton = memo(
   ({ handleClick, onKeys, icon, className = "" }: ButtonProps) => {
     const handleKey = useCallback(
       (e: KeyboardEvent) => {
-        e.preventDefault();
         if (!onKeys.includes(e.key)) return;
         handleClick();
       },

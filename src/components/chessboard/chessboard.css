@@ -226,7 +226,3 @@ html.light {
     color: black;
   }
 }
-
-cg-board square.last-move {
-  background-color: transparent !important;
-}

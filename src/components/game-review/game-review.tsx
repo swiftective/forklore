@@ -15,33 +15,52 @@ import ReviewBoard from "@/components/game-review/review-board";
 import ReviewOpening from "@/components/game-review/review-opening";
 import ReviewNewGameButton from "@/components/game-review/review-new-game";
 import { usePromotion } from "@/components/game-review/promotion-context";
-import { History, HistoryType } from "@/components/game-review/fen-history";
+import { History, HistoryType } from "@/components/game-review/move-history";
 import HistoryButton from "./history-button";
 import { IoChevronBack as BackIcon } from "react-icons/io5";
 import { IoChevronForward as ForIcon } from "react-icons/io5";
 import playAudio from "./audio.ts";
-
-export const FenContext = createContext<((fen: string) => void) | null>(null);
 
 export type GameReviewProps = {
   reviewInput: ReviewReport;
   newGame: () => void;
 };
 
+export type LastMove =
+  | {
+      from: Key;
+      to: Key;
+    }
+  | undefined;
+
+export type BoardState = {
+  fen: string;
+  dest: LastMove;
+  move: string | undefined;
+};
+
+export const BoardContext = createContext<
+  ((fen: string, dest: LastMove, move: string | undefined) => void) | null
+>(null);
+
 const initFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 function GameReview({ reviewInput, newGame }: GameReviewProps) {
   const setConfig = useContext(ConfigContext);
 
-  const [fen, setFen] = useState(initFen);
+  const [board, setBoard] = useState<BoardState>({
+    fen: initFen,
+    dest: undefined,
+    move: undefined,
+  });
 
   const chess = useMemo(() => new Chess(), []);
 
-  const fenHistory = useMemo<HistoryType>(() => History(), []);
+  const moveHistory = useMemo<HistoryType>(() => History(), []);
 
   useEffect(() => {
-    fenHistory.add(fen);
-  }, [fen]);
+    moveHistory.add(board);
+  }, [board]);
 
   const getDests = useCallback((chess: Chess) => {
     const map = new Map<Key, Key[]>();
@@ -66,16 +85,20 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
 
   const promptPromotion = usePromotion();
 
-  const setCurrFen = useCallback(
-    (fen: string) => {
+  const setCurrBoard = useCallback(
+    (fen: string, dest: LastMove, move: string | undefined) => {
       chess.load(fen);
+
+      const lastMove = dest ? [dest.from, dest.to] : undefined;
+
       setConfig!({
         fen: fen,
         turnColor: getTurn(chess),
         check: chess.isCheck(),
         movable: { color: getTurn(chess), dests: getDests(chess) },
+        lastMove: lastMove,
       });
-      setFen(fen);
+      setBoard({ fen, dest, move });
     },
     [setConfig, chess, getDests, getTurn],
   );
@@ -98,7 +121,8 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
                 chess.move({ from: from, to: to, promotion: piece });
                 const move = chess.history().pop();
 
-                setCurrFen(chess.fen());
+                setCurrBoard(chess.fen(), { from, to }, move);
+
                 playAudio(move, chess.fen());
               }, getTurn(chess));
 
@@ -107,9 +131,11 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
 
             chess.move({ from: from, to: to });
 
-            playAudio(chess.history().pop(), chess.fen());
+            const move = chess.history().pop();
 
-            setCurrFen(chess.fen());
+            playAudio(move, chess.fen());
+
+            setCurrBoard(chess.fen(), { from, to }, move);
           },
         },
       },
@@ -120,9 +146,9 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
   }, []);
 
   return (
-    <FenContext.Provider value={setCurrFen}>
+    <BoardContext.Provider value={setCurrBoard}>
       <div className="flex flex-col size-full">
-        <Analyzer fen={fen} />
+        <Analyzer fen={board.fen} />
         <ReviewOpening opening={reviewInput.opening} />
         <ReviewBoard moves={reviewInput.review} />
         <div className="flex gap-2 my-5">
@@ -131,7 +157,8 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
             icon={<BackIcon />}
             onKeys={["ArrowLeft", "a"]}
             handleClick={() => {
-              setCurrFen(fenHistory.back());
+              const { fen, dest, move } = moveHistory.back();
+              setCurrBoard(fen, dest, move);
             }}
           />
           <HistoryButton
@@ -139,15 +166,16 @@ function GameReview({ reviewInput, newGame }: GameReviewProps) {
             icon={<ForIcon />}
             onKeys={["ArrowRight", "d"]}
             handleClick={() => {
-              const fen = fenHistory.forward();
-              if (!fen) return;
-              setCurrFen(fen);
+              const hisMove = moveHistory.forward();
+              if (!hisMove) return;
+              playAudio(hisMove.move, hisMove.fen);
+              setCurrBoard(hisMove.fen, hisMove.dest, hisMove.move);
             }}
           />
           <ReviewNewGameButton fn={newGame} />
         </div>
       </div>
-    </FenContext.Provider>
+    </BoardContext.Provider>
   );
 }
 

@@ -1,16 +1,19 @@
 import { Chess } from "chess.js";
 import { Stockfish as engine } from "./engine";
 import { Move } from "@/lib/engine";
+import { Key } from "chessground/types";
 
 export type ReviewedMoveTemp =
   | {
       move: string;
       moveFen: string;
+      dest: { from: Key; to: Key };
       bookMove: true;
     }
   | {
       move: string;
       moveFen: string;
+      dest: { from: Key; to: Key };
       bestMoves: Move[];
       eval: string;
     };
@@ -19,11 +22,13 @@ export type ReviewedMove =
   | {
       move: string;
       moveFen: string;
+      dest: { from: Key; to: Key };
       bookMove: true;
     }
   | {
       move: string;
       moveFen: string;
+      dest: { from: Key; to: Key };
       bestMovesBefore: Move[];
       bestMovesAfter: Move[];
       evalBefore: string;
@@ -48,6 +53,9 @@ export function Reviewer(
   const fens = chess
     .history({ verbose: true })
     .map((move) => ({ before: move.before, after: move.after }));
+  const dests = chess
+    .history({ verbose: true })
+    .map((move) => ({ from: move.from, to: move.to }));
 
   let reviewedMoves = bookMoves;
   const movesReviewed: ReviewedMoveTemp[] = [];
@@ -81,6 +89,7 @@ export function Reviewer(
       reviewTemp.push({
         move: move.move,
         moveFen: move.moveFen,
+        dest: move.dest,
         evalBefore: move.eval,
         evalAfter: evalAfter,
         bestMovesBefore: move.bestMoves,
@@ -89,6 +98,7 @@ export function Reviewer(
     });
 
     setTimeout(() => {
+      console.log({ opening, review: reviewTemp });
       onComplete({ opening, review: reviewTemp });
     }, 300);
   }
@@ -97,6 +107,7 @@ export function Reviewer(
     movesReviewed.push({
       move: gameMoves[i],
       moveFen: fens[i].after,
+      dest: dests[i],
       bookMove: true,
     });
     setTimeout(
@@ -114,6 +125,7 @@ export function Reviewer(
     movesReviewed.push({
       move: gameMoves[reviewedMoves],
       moveFen: fens[reviewedMoves].after,
+      dest: dests[reviewedMoves],
       bestMoves: moves,
       eval: score,
     });

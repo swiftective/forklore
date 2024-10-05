@@ -3,8 +3,9 @@ import { ScrollArea, ScrollBar } from "../ui/scroll-area";
 import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { GrFormNext as NextIcon } from "react-icons/gr";
-import { FenContext } from "./game-review";
+import { BoardContext, LastMove } from "./game-review";
 import playAudio from "./audio.ts";
+import { Button } from "@/components/ui/button.tsx";
 
 type SaveProps = {
   savedMoves: Move[];
@@ -14,17 +15,20 @@ type SaveProps = {
 const SavedMoves = memo(({ savedMoves, className = "" }: SaveProps) => {
   const [currMove, setMove] = useState(-1);
 
-  const setFen = useContext(FenContext);
-  const handleClick = useCallback((fen: string) => {
-    return () => setFen!(fen);
-  }, []);
+  const setBoard = useContext(BoardContext);
+  const handleClick = useCallback(
+    (fen: string, dest: LastMove, move: string | undefined) => {
+      return () => setBoard!(fen, dest, move);
+    },
+    [],
+  );
 
   useEffect(() => {
     const MOVE = savedMoves[currMove];
 
     if (!MOVE) return;
 
-    handleClick(MOVE.fen)();
+    handleClick(MOVE.fen, MOVE.dest, MOVE.move)();
 
     playAudio(MOVE.move, MOVE.fen);
   }, [currMove]);
@@ -36,8 +40,9 @@ const SavedMoves = memo(({ savedMoves, className = "" }: SaveProps) => {
   return (
     <div className="w-full flex place-items-center overflow-hidden h-full">
       {savedMoves.length != 0 ? (
-        <span
-          className="size-6"
+        <Button
+          className="size-6 block p-0"
+          variant="outline"
           onClick={() => {
             setMove((move) => {
               const newMove = move + 1;
@@ -46,8 +51,8 @@ const SavedMoves = memo(({ savedMoves, className = "" }: SaveProps) => {
             });
           }}
         >
-          <NextIcon className="size-full" />
-        </span>
+          <NextIcon size={20} className="m-auto" />
+        </Button>
       ) : null}
       <ScrollArea
         className={cn("w-full rounded-lg flex place-items-center", className)}
@@ -59,7 +64,8 @@ const SavedMoves = memo(({ savedMoves, className = "" }: SaveProps) => {
               onClick={(e) => {
                 setMove(index);
                 if (currMove == index) {
-                  handleClick(savedMoves[index].fen)();
+                  const { fen, dest, move } = savedMoves[index];
+                  handleClick(fen, dest, move)();
                 }
                 e.currentTarget.scrollIntoView({
                   behavior: "smooth",

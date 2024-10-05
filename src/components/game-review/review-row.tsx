@@ -1,6 +1,6 @@
 import { ReviewedMove } from "@/lib/reviewer";
 import { useContext } from "react";
-import { FenContext } from "./game-review";
+import { BoardContext } from "./game-review";
 
 type RowProps = {
   id: number;
@@ -12,14 +12,15 @@ type RowProps = {
 };
 
 function ReviewRow({ id, move1, move2, idx1, idx2, handleClick }: RowProps) {
-  const setFen = useContext(FenContext);
+  const setBoard = useContext(BoardContext);
 
   return (
     <div className="flex fadein gap-4 p-4 font-medium border-b">
       <span className="w-24">{id}.</span>
       <span
         onClick={() => {
-          setFen!(move1.moveFen);
+          const { moveFen: fen, dest, move } = move1;
+          setBoard!(fen, dest, move);
           handleClick(idx1);
         }}
         className="hover:underline w-36 cursor-pointer"
@@ -29,7 +30,8 @@ function ReviewRow({ id, move1, move2, idx1, idx2, handleClick }: RowProps) {
       {move2 == undefined ? null : (
         <span
           onClick={() => {
-            setFen!(move2.moveFen);
+            const { moveFen: fen, dest, move } = move2;
+            setBoard!(fen, dest, move);
             handleClick(idx2);
           }}
           className="hover:underline w-36 cursor-pointer"

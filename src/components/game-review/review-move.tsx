@@ -1,7 +1,7 @@
 import { ReviewedMove } from "@/lib/reviewer";
 import SavedMoves from "@/components/game-review/saved-moves";
 import Eval from "./eval";
-import { FenContext } from "./game-review";
+import { BoardContext } from "./game-review";
 import { useContext, useEffect, useRef } from "react";
 import playAudio from "./audio";
 
@@ -10,9 +10,12 @@ type MoveProp = {
 };
 
 function ReviewMove({ move }: MoveProp) {
-  const setFen = useContext(FenContext);
+  const setBoard = useContext(BoardContext);
 
-  const handleClick = () => setFen!(move.moveFen);
+  const handleClick = () => {
+    const { moveFen: fen, dest, move: moveName } = move;
+    setBoard!(fen, dest, moveName);
+  };
 
   const ref = useRef<HTMLDivElement | null>(null);
 

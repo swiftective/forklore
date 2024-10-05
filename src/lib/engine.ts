@@ -1,8 +1,10 @@
 import { Chess } from "chess.js";
+import { Key } from "chessground/types";
 
 export type Move = {
   move: string;
   fen: string;
+  dest: { from: Key; to: Key };
 };
 
 export type Info = {
@@ -84,7 +86,14 @@ function Engine() {
 
       if (lastMove == undefined) return null;
 
-      moves.push({ move: lastMove.san, fen: lastMove.after });
+      moves.push({
+        move: lastMove.san,
+        fen: lastMove.after,
+        dest: {
+          from: lastMove.from,
+          to: lastMove.to,
+        },
+      });
     });
 
     return moves;

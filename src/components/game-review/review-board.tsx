@@ -3,36 +3,37 @@ import { ScrollArea } from "../ui/scroll-area";
 import ReviewRow from "./review-row";
 import { memo, useCallback, useContext, useEffect, useState } from "react";
 import ReviewMove from "./review-move";
-import { FenContext } from "./game-review";
+import { BoardContext } from "./game-review";
 
 const ReviewBoard = memo(({ moves }: { moves: ReviewedMove[] }) => {
   const [curr, setCurr] = useState<number | null>(null);
-  const setFen = useContext(FenContext);
+  const setBoard = useContext(BoardContext);
 
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
-      e.preventDefault();
-
       if (["ArrowUp", "w"].includes(e.key)) {
         const val =
           curr == null ? 0 : curr + 1 >= moves.length ? curr : curr + 1;
         setCurr(val);
-        setFen!(moves[val].moveFen);
+        const { moveFen: fen, dest, move } = moves[val];
+        setBoard!(fen, dest, move);
       }
 
       if (["ArrowDown", "s"].includes(e.key)) {
         const val = curr == null ? 0 : curr - 1 <= 0 ? 0 : curr - 1;
         setCurr(val);
-        setFen!(moves[val].moveFen);
+        const { moveFen: fen, dest, move } = moves[val];
+        setBoard!(fen, dest, move);
       }
 
       if (e.key == "f") {
         if (curr == null) return;
         setCurr(curr);
-        setFen!(moves[curr].moveFen);
+        const { moveFen: fen, dest, move } = moves[curr];
+        setBoard!(fen, dest, move);
       }
     },
-    [setCurr, curr, moves, setFen],
+    [setCurr, curr, moves, setBoard],
   );
 
   useEffect(() => {

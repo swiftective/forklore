@@ -4,7 +4,7 @@ import { CgSpinner as Spinner } from "react-icons/cg";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Info, Move, Stockfish as engine } from "@/lib/engine";
 import { cn } from "@/lib/utils";
-import { FenContext } from "./game-review";
+import { BoardContext } from "./game-review";
 import SavedMoves from "@/components/game-review/saved-moves";
 import playAudio from "./audio";
 
@@ -20,10 +20,11 @@ function Analyzer({ fen }: AnalProps) {
   const [savedMoves, setSavedMoves] = useState<Move[]>([]);
   const [loading, setloading] = useState(true);
 
-  const setFen = useContext(FenContext);
+  const setBoard = useContext(BoardContext);
 
-  const handleClick = useCallback((fen: string) => {
-    return () => setFen!(fen);
+  const handleClick = useCallback((move: Move) => {
+    const { fen, dest, move: moveSan } = move;
+    return () => setBoard!(fen, dest, moveSan);
   }, []);
 
   useEffect(() => {
@@ -65,7 +66,7 @@ function Analyzer({ fen }: AnalProps) {
               <span
                 key={index}
                 onClick={() => {
-                  handleClick(move.fen)();
+                  handleClick(move)();
                   playAudio(move.move, move.fen);
                 }}
                 className="m-1 whitespace-nowrap text-sm select-none"
