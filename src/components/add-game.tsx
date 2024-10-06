@@ -36,7 +36,7 @@ function AddGame({
         placeholder="Paste the pgn"
       />
       <RadioGroup
-        className="m-8"
+        className="m-8 select-none"
         value={input.player}
         onValueChange={(player: "white" | "black") => {
           setInput({ ...input, player: player });

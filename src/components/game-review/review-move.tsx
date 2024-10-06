@@ -39,7 +39,7 @@ function ReviewMove({ move }: MoveProp) {
   return "bookMove" in move ? (
     <div
       ref={ref}
-      className="w-full min-h-36 p-4 border border-border rounded-lg"
+      className="w-full min-h-36 p-4 border border-border rounded-lg select-none"
     >
       <span
         onClick={handleClick}
@@ -52,7 +52,7 @@ function ReviewMove({ move }: MoveProp) {
   ) : (
     <div
       ref={ref}
-      className="w-full min-h-36 p-4 flex flex-col gap-4 border border-border rounded-lg"
+      className="w-full min-h-36 p-4 flex flex-col gap-4 border border-border rounded-lg select-none"
     >
       <div
         onClick={handleClick}

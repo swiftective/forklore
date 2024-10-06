@@ -49,7 +49,7 @@ function Analyzer({ fen }: AnalProps) {
         {!loading ? (
           <span
             className={cn(
-              "px-2 whitespace-nowrap font-semibold rounded-l-lg mr-2 text-black bg-white",
+              "px-2 whitespace-nowrap font-semibold rounded-l-lg mr-2 text-black bg-white select-none",
               score.includes("-") && "bg-[#121212] text-white",
             )}
           >

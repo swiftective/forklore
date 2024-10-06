@@ -15,7 +15,7 @@ function ReviewRow({ id, move1, move2, idx1, idx2, handleClick }: RowProps) {
   const setBoard = useContext(BoardContext);
 
   return (
-    <div className="flex fadein gap-4 p-4 font-medium border-b">
+    <div className="flex fadein gap-4 p-4 font-medium border-b select-none">
       <span className="w-24">{id}.</span>
       <span
         onClick={() => {
