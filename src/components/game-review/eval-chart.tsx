@@ -8,6 +8,7 @@ import {
 import { ReviewedMove } from "@/lib/reviewer";
 import { memo, useMemo } from "react";
 import Eval from "./eval";
+import { minMax } from "@/lib/utils";
 
 function getEvals(review: ReviewedMove[]): string[] {
   const evals = review.map((value: ReviewedMove) => {
@@ -28,12 +29,18 @@ function getEvalValues(review: ReviewedMove[]): number[] {
     const { evalAfter, evalBefore } = value;
 
     if (evalAfter.includes("M")) {
-      return value.evalAfter[0] == "-" ? -100 : 100;
+      return value.evalAfter[0] == "-" ? -10 : 10;
     }
 
-    if (evalAfter == "") return Number(evalBefore);
+    if (evalAfter == "") {
+      if (evalBefore.includes("M")) {
+        return evalBefore[0] == "-" ? -10 : 10;
+      }
 
-    return Number(evalAfter);
+      return minMax(Number(evalBefore), -10, 10);
+    }
+
+    return minMax(Number(evalAfter), -10, 10);
   });
 
   return evals;
@@ -101,7 +108,7 @@ export const EvalChart = memo(({ review, setCurr }: ChartProps) => {
         />
         <Area
           dataKey="eval"
-          type="natural"
+          type="bump"
           baseValue="dataMin"
           fill="var(--color-eval)"
           fillOpacity={0.6}
