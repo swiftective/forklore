@@ -5,6 +5,7 @@ import { memo, useCallback, useContext, useEffect, useState } from "react";
 import ReviewMove from "./review-move";
 import { BoardContext } from "./game-review";
 import { EvalChart } from "./eval-chart";
+import useThrottle from "@/hooks/use-trottle";
 
 const ReviewBoard = memo(({ moves }: { moves: ReviewedMove[] }) => {
   const [curr, setCurr] = useState<number | null>(null);
@@ -16,32 +17,30 @@ const ReviewBoard = memo(({ moves }: { moves: ReviewedMove[] }) => {
     setBoard!(fen, dest, move);
   }, []);
 
-  const handleKey = useCallback(
-    (e: KeyboardEvent) => {
-      if (["ArrowUp", "w"].includes(e.key)) {
-        const val =
-          curr == null ? 0 : curr + 1 >= moves.length ? curr : curr + 1;
-        setCurr(val);
-        const { moveFen: fen, dest, move } = moves[val];
-        setBoard!(fen, dest, move);
-      }
+  const throttle = useThrottle();
 
-      if (["ArrowDown", "s"].includes(e.key)) {
-        const val = curr == null ? 0 : curr - 1 <= 0 ? 0 : curr - 1;
-        setCurr(val);
-        const { moveFen: fen, dest, move } = moves[val];
-        setBoard!(fen, dest, move);
-      }
+  const handleKey = throttle((e: KeyboardEvent) => {
+    if (["ArrowUp", "w"].includes(e.key)) {
+      const val = curr == null ? 0 : curr + 1 >= moves.length ? curr : curr + 1;
+      setCurr(val);
+      const { moveFen: fen, dest, move } = moves[val];
+      setBoard!(fen, dest, move);
+    }
 
-      if (e.key == "f") {
-        if (curr == null) return;
-        setCurr(curr);
-        const { moveFen: fen, dest, move } = moves[curr];
-        setBoard!(fen, dest, move);
-      }
-    },
-    [setCurr, curr, moves, setBoard],
-  );
+    if (["ArrowDown", "s"].includes(e.key)) {
+      const val = curr == null ? 0 : curr - 1 <= 0 ? 0 : curr - 1;
+      setCurr(val);
+      const { moveFen: fen, dest, move } = moves[val];
+      setBoard!(fen, dest, move);
+    }
+
+    if (e.key == "f") {
+      if (curr == null) return;
+      setCurr(curr);
+      const { moveFen: fen, dest, move } = moves[curr];
+      setBoard!(fen, dest, move);
+    }
+  }, 200);
 
   useEffect(() => {
     window.addEventListener("keydown", handleKey);

@@ -6,6 +6,7 @@ import { GrFormNext as NextIcon } from "react-icons/gr";
 import { BoardContext, LastMove } from "./game-review";
 import playAudio from "./audio.ts";
 import { Button } from "@/components/ui/button.tsx";
+import useThrottle from "@/hooks/use-trottle.ts";
 
 type SaveProps = {
   savedMoves: Move[];
@@ -22,6 +23,8 @@ const SavedMoves = memo(({ savedMoves, className = "" }: SaveProps) => {
     },
     [],
   );
+
+  const throttle = useThrottle();
 
   useEffect(() => {
     const MOVE = savedMoves[currMove];
@@ -43,13 +46,13 @@ const SavedMoves = memo(({ savedMoves, className = "" }: SaveProps) => {
         <Button
           className="size-6 block p-0"
           variant="outline"
-          onClick={() => {
+          onClick={throttle(() => {
             setMove((move) => {
               const newMove = move + 1;
               if (newMove >= savedMoves.length) return move;
               return newMove;
             });
-          }}
+          })}
         >
           <NextIcon size={20} className="m-auto" />
         </Button>
