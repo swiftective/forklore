@@ -1,4 +1,4 @@
-import { Area, AreaChart, CartesianGrid, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, Dot, XAxis, YAxis } from "recharts";
 
 import {
   ChartConfig,
@@ -56,6 +56,7 @@ const chartConfig = {
 type ChartProps = {
   review: ReviewedMove[];
   setCurr: (idx: number) => void;
+  curr: number | null;
 };
 
 type TipProps = {
@@ -65,7 +66,7 @@ type TipProps = {
   evals: string[];
 };
 
-export const EvalChart = memo(({ review, setCurr }: ChartProps) => {
+export const EvalChart = memo(({ review, setCurr, curr }: ChartProps) => {
   const evals = useMemo(() => {
     return getEvals(review);
   }, [review]);
@@ -95,10 +96,12 @@ export const EvalChart = memo(({ review, setCurr }: ChartProps) => {
           setCurr(activeTooltipIndex);
         }}
       >
-        <CartesianGrid stroke="gray" syncWithTicks={true} vertical={false} />
-        <ChartTooltip
-          cursor={false}
-          content={<CustomToolTip evals={evals} />}
+        <CartesianGrid stroke="gray" syncWithTicks={true} />
+        <ChartTooltip cursor={false} content={<EvalToolTip evals={evals} />} />
+        <XAxis
+          ticks={curr ? [curr] : []}
+          hide={true}
+          domain={["dataMin", "dataMax"]}
         />
         <YAxis
           ticks={[0]}
@@ -113,14 +116,30 @@ export const EvalChart = memo(({ review, setCurr }: ChartProps) => {
           fill="var(--color-eval)"
           fillOpacity={0.6}
           stroke="var(--color-eval)"
+          dot={<CurrentDot curr={curr} />}
         />
       </AreaChart>
     </ChartContainer>
   );
 });
 
-function CustomToolTip({ active, payload, label, evals }: TipProps) {
+function EvalToolTip({ active, payload, label, evals }: TipProps) {
   if (!(active && payload && payload.length && label)) return;
 
   return <Eval score={evals[label]} />;
 }
+
+const CurrentDot = (props: {
+  cx?: number;
+  cy?: number;
+  payload?: any;
+  curr: number | null;
+}) => {
+  const { payload, curr } = props;
+
+  if (payload.move == curr) {
+    return <Dot {...props} />;
+  }
+
+  return;
+};

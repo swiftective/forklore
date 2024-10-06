@@ -51,7 +51,7 @@ const ReviewBoard = memo(({ moves }: { moves: ReviewedMove[] }) => {
 
   return (
     <>
-      <EvalChart review={moves} setCurr={setCurrBoard} />
+      <EvalChart review={moves} setCurr={setCurrBoard} curr={curr} />
       <ScrollArea className="flex-auto mt-3">
         {moves.map((move, index) => {
           if (index % 2 == 1) {
