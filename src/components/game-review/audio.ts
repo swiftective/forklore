@@ -1,4 +1,20 @@
 import { Chess } from "chess.js";
+import { Howl } from "howler";
+
+const captureAudio = new Howl({
+  src: "capture.mp3",
+  volume: 0.5,
+});
+
+const moveAudio = new Howl({
+  src: "move.mp3",
+  volume: 0.5,
+});
+
+const gameOverAudio = new Howl({
+  src: "gameover.mp3",
+  volume: 0.5,
+});
 
 export default function playAudio(
   move: string | undefined,
@@ -13,16 +29,15 @@ export default function playAudio(
   const isCheckmate = chess.isCheckmate();
   const isStalemate = chess.isStalemate();
 
-  let audio: HTMLAudioElement;
+  let audio: Howl;
 
   if (isCheckmate || isStalemate) {
-    audio = new Audio("gameover.mp3");
+    audio = gameOverAudio;
   } else if (isCapture) {
-    audio = new Audio("capture.mp3");
+    audio = captureAudio;
   } else {
-    audio = new Audio("move.mp3");
+    audio = moveAudio;
   }
 
-  audio.volume = 0.5;
   audio.play();
 }
