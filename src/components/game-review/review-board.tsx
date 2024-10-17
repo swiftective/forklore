@@ -79,6 +79,7 @@ const ReviewBoard = memo(({ moves }: { moves: ReviewedMove[] }) => {
             </>
           );
         })}
+        <div className="w-full min-h-36"></div>
         <ScrollBar className="w-[1px]" />
       </ScrollArea>
     </>
