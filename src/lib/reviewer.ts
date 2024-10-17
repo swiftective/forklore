@@ -3,28 +3,23 @@ import { Stockfish as engine } from "./engine";
 import { Move } from "@/lib/engine";
 import { Key } from "chessground/types";
 
-export type ReviewedMoveTemp =
-  | {
-      move: string;
-      moveFen: string;
-      dest: { from: Key; to: Key };
-      bookMove: true;
-    }
-  | {
-      move: string;
-      moveFen: string;
-      dest: { from: Key; to: Key };
-      bestMoves: Move[];
-      eval: string;
-    };
+export type BookMove = {
+  move: string;
+  moveFen: string;
+  dest: { from: Key; to: Key };
+  bookMove: true;
+};
+
+export type EngineReviewedMove = {
+  move: string;
+  moveFen: string;
+  dest: { from: Key; to: Key };
+  bestMoves: Move[];
+  eval: string;
+};
 
 export type ReviewedMove =
-  | {
-      move: string;
-      moveFen: string;
-      dest: { from: Key; to: Key };
-      bookMove: true;
-    }
+  | BookMove
   | {
       move: string;
       moveFen: string;
@@ -42,40 +37,77 @@ export type ReviewReport = { opening: Opening; review: ReviewedMove[] };
 export function Reviewer(
   pgn: string,
   opening: Opening,
-  bookMoves: number,
+  bookMovesNo: number,
   onComplete: (info: ReviewReport) => void,
   onProgress: (progress: number, fen: string) => void,
   reviewDepth: number,
 ) {
   const chess = new Chess();
   chess.loadPgn(pgn);
+
   const gameMoves = chess.history();
+
   const fens = chess
     .history({ verbose: true })
     .map((move) => ({ before: move.before, after: move.after }));
+
   const dests = chess
     .history({ verbose: true })
     .map((move) => ({ from: move.from, to: move.to }));
 
-  let reviewedMoves = bookMoves;
-  const movesReviewed: ReviewedMoveTemp[] = [];
+  let reviewedMovesNo = bookMovesNo;
+
+  let reviewedMoves: ReviewedMove[] = [];
+
+  const engineReviewedMoves: EngineReviewedMove[] = [];
+
   let reviewComplete = false;
+
+  engine.reset();
+  engine.setOnMessage(({ depth, score, moves }) => {
+    if (reviewComplete || depth != reviewDepth) return;
+
+    engineReviewedMoves.push({
+      move: gameMoves[reviewedMovesNo],
+      moveFen: fens[reviewedMovesNo].after,
+      dest: dests[reviewedMovesNo],
+      bestMoves: moves,
+      eval: score,
+    });
+
+    onProgress(
+      ((reviewedMovesNo + 1) / fens.length) * 100,
+      fens[reviewedMovesNo].after,
+    );
+    reviewedMovesNo++;
+
+    if (reviewedMovesNo == fens.length) {
+      reviewDone();
+      return;
+    }
+
+    const chess = new Chess();
+
+    chess.load(fens[reviewedMovesNo].after);
+
+    if (reviewedMovesNo > fens.length) {
+      console.error("Review moves exceed number of moves");
+      return;
+    }
+
+    setTimeout(() => {
+      engine.analyze(fens[reviewedMovesNo].before, reviewDepth);
+    }, 300);
+  });
 
   function reviewDone() {
     reviewComplete = true;
     engine.reset();
 
-    const reviewTemp: ReviewedMove[] = [];
-
-    movesReviewed.forEach((move, index) => {
-      if ("bookMove" in move) {
-        reviewTemp.push(move);
-        return;
-      }
-
+    engineReviewedMoves.forEach((move, index) => {
       let evalAfter = "";
       let afterBestMoves: Move[] = [];
-      const nextMove = movesReviewed[index + 1];
+      const nextMove = engineReviewedMoves[index + 1];
 
       if (nextMove) {
         if ("bookMove" in nextMove) {
@@ -86,7 +118,7 @@ export function Reviewer(
         afterBestMoves = nextMove.bestMoves;
       }
 
-      reviewTemp.push({
+      reviewedMoves.push({
         move: move.move,
         moveFen: move.moveFen,
         dest: move.dest,
@@ -98,71 +130,37 @@ export function Reviewer(
     });
 
     setTimeout(() => {
-      onComplete({ opening, review: reviewTemp });
+      onComplete({ opening, review: reviewedMoves });
     }, 300);
   }
 
-  for (let i = 0; i < bookMoves; i++) {
-    movesReviewed.push({
+  for (let i = 0; i < bookMovesNo; i++) {
+    reviewedMoves.push({
       move: gameMoves[i],
       moveFen: fens[i].after,
       dest: dests[i],
       bookMove: true,
     });
+
     setTimeout(
       () => {
         onProgress(((i + 1) / fens.length) * 100, fens[i].after);
       },
-      400 + i * 400,
+      (i + 1) * 400,
     );
+
+    if (i == bookMovesNo - 1) {
+      setTimeout(
+        () => {
+          if (chess.history().length == bookMovesNo) {
+            reviewDone();
+            return;
+          }
+
+          engine.analyze(fens[bookMovesNo].before, reviewDepth);
+        },
+        (i + 2) * 400,
+      );
+    }
   }
-
-  engine.reset();
-  engine.setOnMessage(({ depth, score, moves }) => {
-    if (reviewComplete || depth != reviewDepth) return;
-
-    movesReviewed.push({
-      move: gameMoves[reviewedMoves],
-      moveFen: fens[reviewedMoves].after,
-      dest: dests[reviewedMoves],
-      bestMoves: moves,
-      eval: score,
-    });
-
-    onProgress(
-      ((reviewedMoves + 1) / fens.length) * 100,
-      fens[reviewedMoves].after,
-    );
-    reviewedMoves++;
-
-    if (reviewedMoves == fens.length) {
-      reviewDone();
-      return;
-    }
-
-    const chess = new Chess();
-
-    chess.load(fens[reviewedMoves].after);
-
-    if (reviewedMoves > fens.length) {
-      console.error("Review moves exceed number of moves");
-      return;
-    }
-
-    setTimeout(() => {
-      engine.analyze(fens[reviewedMoves].before, reviewDepth);
-    }, 300);
-  });
-
-  setTimeout(
-    () => {
-      if (chess.history().length == bookMoves) {
-        reviewDone();
-        return;
-      }
-
-      engine.analyze(fens[bookMoves].before, reviewDepth);
-    },
-    400 * (bookMoves + 1),
-  );
 }
